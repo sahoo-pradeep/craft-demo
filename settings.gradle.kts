@@ -1,2 +1,6 @@
 rootProject.name = "craft-demo"
-include("services:business-profile")
+include("services:user-profile")
+include("services:user-profile:api:client")
+include("services:user-profile:api:server-stub")
+include("services:user-profile:common")
+include("services:user-profile:dao")

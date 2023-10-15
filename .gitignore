@@ -22,6 +22,6 @@ local.properties
 /application.yml
 
 ### Generated code
-api/*client/src
-api/server-stub/src
+**/api/*client/src
+**/api/server-stub/src
 **/.openapi-generator

@@ -1,0 +1,117 @@
+openapi: 3.0.0
+info:
+  title: User Profile
+  description: Open API spec for User Profile
+  version: 0.0.1
+servers:
+  - url: "http://localhost:8080"
+paths:
+  /user-profile/v1/business-profile:
+    get:
+      tags:
+        - business-profile
+      operationId: getBusinessProfile
+      summary: Get business profile of the user
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      responses:
+        "200":
+          description: Business profile of the user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessProfileResponse"
+    post:
+      tags:
+        - business-profile
+      operationId: createBusinessProfile
+      summary: Create a new business profile of the user
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBusinessProfileRequest"
+      responses:
+        "200":
+          description: Business profile created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessProfileResponse"
+components:
+  parameters:
+    userId:
+      in: header
+      name: x-user-id
+      required: true
+      schema:
+        type: string
+  schemas:
+    BusinessProfile:
+      type: object
+      required:
+        - companyName
+        - legalName
+        - businessAddress
+        - legalAddress
+        - pan
+        - ein
+        - email
+        - website
+      properties:
+        companyName:
+          type: string
+        legalName:
+          type: string
+        businessAddress:
+          $ref: '#/components/schemas/Address'
+        legalAddress:
+          $ref: '#/components/schemas/Address'
+        pan:
+          type: string
+        ein:
+          type: string
+        email:
+          type: string
+        website:
+          type: string
+    Address:
+      type: object
+      required:
+        - line1
+        - city
+        - state
+        - zip
+        - country
+      properties:
+        line1:
+          type: string
+        line2:
+          type: string
+        line3:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zip:
+          type: string
+        country:
+          type: string
+    BusinessProfileResponse:
+      type: object
+      required:
+        - businessProfile
+      properties:
+        businessProfile:
+          $ref: "#/components/schemas/BusinessProfile"
+    CreateBusinessProfileRequest:
+      type: object
+      required:
+        - businessProfile
+      properties:
+        businessProfile:
+          $ref: "#/components/schemas/BusinessProfile"
