@@ -1,14 +1,14 @@
 package demo.craft.user.profile.mapper
 
 import demo.craft.user.profile.common.domain.domain.entity.BusinessProfile
-import demo.craft.user.profile.common.domain.domain.entity.UpdateRequest
-import demo.craft.user.profile.common.domain.domain.enums.UpdateRequestOperation
-import demo.craft.user.profile.common.domain.domain.enums.UpdateRequestStatus
+import demo.craft.user.profile.common.domain.domain.entity.BusinessProfileChangeRequest
+import demo.craft.user.profile.common.domain.domain.enums.ChangeRequestOperation
+import demo.craft.user.profile.common.domain.domain.enums.ChangeRequestStatus
 import java.util.UUID
 
-fun BusinessProfile.toUpdateRequest(operation: UpdateRequestOperation): UpdateRequest =
-    UpdateRequest(
-        requestUuid = UUID.randomUUID().toString(),
+fun BusinessProfile.toChangeRequest(operation: ChangeRequestOperation): BusinessProfileChangeRequest =
+    BusinessProfileChangeRequest(
+        requestId = UUID.randomUUID().toString(),
         operation = operation,
         companyName = this.companyName,
         legalName = this.legalName,
@@ -19,5 +19,5 @@ fun BusinessProfile.toUpdateRequest(operation: UpdateRequestOperation): UpdateRe
         email = this.email,
         website = this.website,
         userId = this.userId,
-        status = UpdateRequestStatus.init()
+        status = ChangeRequestStatus.init()
     )

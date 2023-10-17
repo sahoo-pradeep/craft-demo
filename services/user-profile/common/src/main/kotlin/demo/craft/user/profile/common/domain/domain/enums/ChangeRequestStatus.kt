@@ -1,12 +1,12 @@
 package demo.craft.user.profile.common.domain.domain.enums
 
-enum class UpdateRequestStatus {
+enum class ChangeRequestStatus {
     IN_PROGRESS,
     ACCEPTED,
     REJECTED;
 
     companion object {
         // Initial status for update request
-        fun init(): UpdateRequestStatus = IN_PROGRESS
+        fun init(): ChangeRequestStatus = IN_PROGRESS
     }
 }

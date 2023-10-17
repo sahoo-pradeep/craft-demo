@@ -133,7 +133,7 @@ components:
         country:
           type: string
           example: India
-    UpdateRequestStatus:
+    ChangeRequestStatus:
       type: string
       enum: [ IN_PROGRESS, ACCEPTED, REJECTED ]
     GetBusinessProfileResponse:

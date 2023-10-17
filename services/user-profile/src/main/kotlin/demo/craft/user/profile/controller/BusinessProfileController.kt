@@ -31,7 +31,7 @@ class BusinessProfileController(
             CreateBusinessProfileResponse(
                 requestUuid = businessProfileService.createBusinessProfile(
                     createBusinessProfileRequest.businessProfile.toDomainModel(xMinusUserMinusId)
-                ).requestUuid
+                ).requestId
             )
         )
 
@@ -43,7 +43,7 @@ class BusinessProfileController(
             UpdateBusinessProfileResponse(
                 requestUuid = businessProfileService.updateBusinessProfile(
                     updateBusinessProfileRequest.businessProfile.toDomainModel(xMinusUserMinusId)
-                ).requestUuid
+                ).requestId
             )
         )
 }

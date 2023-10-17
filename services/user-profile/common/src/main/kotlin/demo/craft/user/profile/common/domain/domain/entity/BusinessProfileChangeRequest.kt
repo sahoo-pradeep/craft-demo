@@ -1,7 +1,7 @@
 package demo.craft.user.profile.common.domain.domain.entity
 
-import demo.craft.user.profile.common.domain.domain.enums.UpdateRequestOperation
-import demo.craft.user.profile.common.domain.domain.enums.UpdateRequestStatus
+import demo.craft.user.profile.common.domain.domain.enums.ChangeRequestOperation
+import demo.craft.user.profile.common.domain.domain.enums.ChangeRequestStatus
 import java.time.LocalDateTime
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -14,13 +14,13 @@ import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 
 @Entity
-data class UpdateRequest(
+data class BusinessProfileChangeRequest(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    val requestUuid: String,
+    val requestId: String,
     val userId: String,
     @Enumerated(EnumType.STRING)
-    val operation: UpdateRequestOperation,
+    val operation: ChangeRequestOperation,
     val companyName: String,
     val legalName: String,
     @OneToOne
@@ -32,7 +32,7 @@ data class UpdateRequest(
     val email: String,
     val website: String? = null,
     @Enumerated(EnumType.STRING)
-    val status: UpdateRequestStatus,
+    val status: ChangeRequestStatus,
     @CreationTimestamp
     val createdAt: LocalDateTime? = null,
     @UpdateTimestamp
