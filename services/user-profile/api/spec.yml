@@ -20,7 +20,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BusinessProfileResponse"
+                $ref: "#/components/schemas/GetBusinessProfileResponse"
     post:
       tags:
         - business-profile
@@ -40,7 +40,27 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BusinessProfileResponse"
+                $ref: "#/components/schemas/CreateBusinessProfileResponse"
+    patch:
+      tags:
+        - business-profile
+      operationId: updateBusinessProfile
+      summary: Update business profile of the user
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBusinessProfileRequest"
+      responses:
+        "200":
+          description: Business profile created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateBusinessProfileResponse"
 components:
   parameters:
     userId:
@@ -55,29 +75,34 @@ components:
       required:
         - companyName
         - legalName
-        - businessAddress
-        - legalAddress
         - pan
         - ein
         - email
-        - website
+        - businessAddress
+        - legalAddress
       properties:
         companyName:
           type: string
+          example: Acme
         legalName:
           type: string
+          example: Acme Corp
+        pan:
+          type: string
+          example: XXXCX9999X
+        ein:
+          type: string
+          example: 99-9999999
+        email:
+          type: string
+          example: demo@acme.com
+        website:
+          type: string
+          example: acme.com
         businessAddress:
           $ref: '#/components/schemas/Address'
         legalAddress:
           $ref: '#/components/schemas/Address'
-        pan:
-          type: string
-        ein:
-          type: string
-        email:
-          type: string
-        website:
-          type: string
     Address:
       type: object
       required:
@@ -89,19 +114,29 @@ components:
       properties:
         line1:
           type: string
+          example: House 101
         line2:
           type: string
+          example: 1st Cross
         line3:
           type: string
+          example: Rajiv Street
         city:
           type: string
+          example: Bengaluru
         state:
           type: string
+          example: Karnataka
         zip:
           type: string
+          example: 560001
         country:
           type: string
-    BusinessProfileResponse:
+          example: India
+    UpdateRequestStatus:
+      type: string
+      enum: [ IN_PROGRESS, ACCEPTED, REJECTED ]
+    GetBusinessProfileResponse:
       type: object
       required:
         - businessProfile
@@ -115,3 +150,26 @@ components:
       properties:
         businessProfile:
           $ref: "#/components/schemas/BusinessProfile"
+    CreateBusinessProfileResponse:
+      type: object
+      required:
+        - requestUuid
+      properties:
+        requestUuid:
+          type: string
+          example: af39e021-0acd-4451-8677-14ad95693b1b
+    UpdateBusinessProfileRequest:
+      type: object
+      required:
+        - businessProfile
+      properties:
+        businessProfile:
+          $ref: "#/components/schemas/BusinessProfile"
+    UpdateBusinessProfileResponse:
+      type: object
+      required:
+        - requestUuid
+      properties:
+        requestUuid:
+          type: string
+          example: af39e021-0acd-4451-8677-14ad95693b1b

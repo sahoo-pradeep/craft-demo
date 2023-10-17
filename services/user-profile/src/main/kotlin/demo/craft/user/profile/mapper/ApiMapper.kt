@@ -1,7 +1,7 @@
 package demo.craft.user.profile.mapper
 
-import demo.craft.user.profile.common.domain.entity.Address
-import demo.craft.user.profile.common.domain.entity.BusinessProfile
+import demo.craft.user.profile.common.domain.domain.entity.Address
+import demo.craft.user.profile.common.domain.domain.entity.BusinessProfile
 
 fun BusinessProfile.toApiModel(): demo.craft.user.profile.model.BusinessProfile =
     demo.craft.user.profile.model.BusinessProfile(
@@ -20,8 +20,8 @@ fun demo.craft.user.profile.model.BusinessProfile.toDomainModel(userId: String):
         userId = userId,
         companyName = this.companyName,
         legalName = this.legalName,
-        businessAddress = this.businessAddress.toDomainModel(),
-        legalAddress = this.legalAddress.toDomainModel(),
+        businessAddress = this.businessAddress.toDomainModel(userId),
+        legalAddress = this.legalAddress.toDomainModel(userId),
         pan = this.pan,
         ein = this.ein,
         email = this.email,
@@ -39,8 +39,9 @@ fun Address.toApiModel(): demo.craft.user.profile.model.Address =
         country = this.country
     )
 
-fun demo.craft.user.profile.model.Address.toDomainModel(): Address =
+fun demo.craft.user.profile.model.Address.toDomainModel(userId: String): Address =
     Address(
+        userId = userId,
         line1 = this.line1,
         line2 = this.line2,
         line3 = this.line3,

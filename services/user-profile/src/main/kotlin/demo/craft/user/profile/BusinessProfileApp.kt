@@ -1,6 +1,6 @@
 package demo.craft.user.profile
 
-import demo.craft.user.profile.config.BusinessProfileProperties
+import demo.craft.user.profile.common.domain.config.UserProfileProperties
 import java.time.ZoneId
 import java.util.TimeZone
 import org.springframework.boot.SpringApplication
@@ -15,7 +15,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 )
 @ConfigurationPropertiesScan(
     basePackageClasses = [
-        BusinessProfileProperties::class,
+        UserProfileProperties::class,
     ]
 )
 @EnableJpaRepositories

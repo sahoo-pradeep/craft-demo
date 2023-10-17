@@ -1,6 +1,7 @@
 package demo.craft.user.profile.dao.access.impl.rds
 
-import demo.craft.user.profile.common.domain.entity.BusinessProfile
+import demo.craft.user.profile.common.domain.domain.entity.BusinessProfile
+import demo.craft.user.profile.common.domain.exception.BusinessProfileAlreadyExistsException
 import demo.craft.user.profile.dao.access.BusinessProfileAccess
 import demo.craft.user.profile.dao.repository.AddressRepository
 import demo.craft.user.profile.dao.repository.BusinessProfileRepository
@@ -17,6 +18,10 @@ internal class BusinessProfileRdsImpl(
 
     @Transactional
     override fun createBusinessProfile(businessProfile: BusinessProfile): BusinessProfile {
+        findByUserId(businessProfile.userId)?.let {
+            throw BusinessProfileAlreadyExistsException(businessProfile.userId)
+        }
+
         val persistedBusinessAddress = addressRepository.save(businessProfile.businessAddress)
         val persistedLegalAddress = addressRepository.save(businessProfile.legalAddress)
         return businessProfileRepository.save(

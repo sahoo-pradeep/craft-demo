@@ -1,7 +1,7 @@
-package demo.craft.user.profile.config
+package demo.craft.user.profile.common.domain.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties
-class BusinessProfileProperties {
+class UserProfileProperties {
 }

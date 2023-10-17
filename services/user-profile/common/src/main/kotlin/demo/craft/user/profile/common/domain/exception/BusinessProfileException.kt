@@ -6,5 +6,8 @@ class BusinessProfileNotFoundException(userId: String) :
 class BusinessProfileAlreadyExistsException(userId: String) :
     UserProfileException("Business profile already exist for userId $userId")
 
-class InvalidBusinessProfileException(userId: String, reason: String? = null) :
-    UserProfileException("Invalid business profile for userId $userId. Reason: $reason")
+class InvalidBusinessProfileException(userId: String, additionalInfo: InvalidFieldAdditionalInfo) :
+    UserProfileException(
+        message = "Invalid business profile for userId $userId",
+        additionalInfo = additionalInfo
+    )
