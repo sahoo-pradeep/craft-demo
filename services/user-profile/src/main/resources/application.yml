@@ -1,3 +1,13 @@
+demo:
+  craft:
+    communication:
+      kafka:
+        bootstrapServers: "localhost:9092"
+    user-profile:
+      businessProfile:
+        kafka:
+          changeRequestTopicName: "business-profile-change-request"
+
 spring:
   application:
     name: user-profile

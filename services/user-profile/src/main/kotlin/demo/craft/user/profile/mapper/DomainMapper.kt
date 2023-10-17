@@ -1,5 +1,6 @@
 package demo.craft.user.profile.mapper
 
+import demo.craft.model.kafka.BusinessProfileChangeRequestKafkaPayload
 import demo.craft.user.profile.common.domain.domain.entity.BusinessProfile
 import demo.craft.user.profile.common.domain.domain.entity.BusinessProfileChangeRequest
 import demo.craft.user.profile.common.domain.domain.enums.ChangeRequestOperation
@@ -20,4 +21,11 @@ fun BusinessProfile.toChangeRequest(operation: ChangeRequestOperation): Business
         website = this.website,
         userId = this.userId,
         status = ChangeRequestStatus.init()
+    )
+
+fun BusinessProfileChangeRequest.toKafkaPayload(): BusinessProfileChangeRequestKafkaPayload =
+    BusinessProfileChangeRequestKafkaPayload(
+        userId = this.userId,
+        requestId = this.requestId,
+        createdAt = this.createdAt!!
     )

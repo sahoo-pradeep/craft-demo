@@ -1,7 +1,7 @@
 package demo.craft.user.profile.common.domain.domain.entity
 
-import demo.craft.user.profile.common.domain.domain.enums.Product
 import demo.craft.user.profile.common.domain.domain.enums.ChangeRequestStatus
+import demo.craft.user.profile.common.domain.domain.enums.Product
 import java.time.LocalDateTime
 import javax.persistence.Entity
 import javax.persistence.EnumType

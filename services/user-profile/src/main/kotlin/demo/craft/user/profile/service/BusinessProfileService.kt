@@ -1,5 +1,10 @@
 package demo.craft.user.profile.service
 
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import demo.craft.communication.kafka.KafkaPublisher
+import demo.craft.user.profile.common.domain.config.UserProfileProperties
 import demo.craft.user.profile.common.domain.domain.entity.BusinessProfile
 import demo.craft.user.profile.common.domain.domain.entity.BusinessProfileChangeRequest
 import demo.craft.user.profile.common.domain.domain.enums.ChangeRequestOperation
@@ -10,15 +15,23 @@ import demo.craft.user.profile.common.domain.exception.InvalidFieldAdditionalInf
 import demo.craft.user.profile.dao.access.BusinessProfileAccess
 import demo.craft.user.profile.dao.access.BusinessProfileChangeRequestAccess
 import demo.craft.user.profile.mapper.toChangeRequest
+import demo.craft.user.profile.mapper.toKafkaPayload
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 
 @Service
 class BusinessProfileService(
     private val businessProfileAccess: BusinessProfileAccess,
-    private val businessProfileChangeRequestAccess: BusinessProfileChangeRequestAccess
+    private val businessProfileChangeRequestAccess: BusinessProfileChangeRequestAccess,
+    private val kafkaPublisher: KafkaPublisher,
+    userProfileProperties: UserProfileProperties,
 ) {
     private val log = KotlinLogging.logger {}
+    private val businessProfileProperties = userProfileProperties.businessProfile
+    private val objectMapper = jacksonObjectMapper().apply {
+        registerModule(JavaTimeModule()) // Register JavaTimeModule to handle Java 8 date/time types
+        configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+    }
 
     fun getBusinessProfile(userId: String): BusinessProfile =
         businessProfileAccess.findByUserId(userId) ?: throw BusinessProfileNotFoundException(userId)
@@ -39,7 +52,11 @@ class BusinessProfileService(
             businessProfileChangeRequestAccess.createChangeRequest(businessProfile.toChangeRequest(ChangeRequestOperation.CREATE))
         log.info { "Request to create business profile is created successfully with requestUuid: ${changeRequest.requestId} " }
 
-        // TODO: publish to kafka
+        kafkaPublisher.publish(
+            businessProfileProperties.kafka.changeRequestTopicName,
+            businessProfile.userId.hashCode(),
+            objectMapper.writeValueAsString(changeRequest.toKafkaPayload())
+        )
 
         return changeRequest
     }
@@ -57,7 +74,11 @@ class BusinessProfileService(
             businessProfileChangeRequestAccess.createChangeRequest(businessProfile.toChangeRequest(ChangeRequestOperation.UPDATE))
         log.info { "Request to update business profile is created successfully with requestUuid: ${changeRequest.requestId} " }
 
-        // TODO: publish to kafka
+        kafkaPublisher.publish(
+            businessProfileProperties.kafka.changeRequestTopicName,
+            businessProfile.userId.hashCode(),
+            objectMapper.writeValueAsString(changeRequest.toKafkaPayload())
+        )
 
         return changeRequest
     }

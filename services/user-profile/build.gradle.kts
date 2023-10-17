@@ -10,6 +10,8 @@ dependencies {
     implementation(project(":services:user-profile:api:server-stub"))
     implementation(project(":services:user-profile:common"))
     implementation(project(":services:user-profile:dao"))
+    implementation(project(":services:user-profile:model"))
+    implementation(project(":communication"))
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -20,7 +22,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2")
     implementation("io.github.microutils:kotlin-logging:1.7.9") // logging
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-//	implementation("org.springframework.kafka:spring-kafka")
+	implementation("org.springframework.kafka:spring-kafka")
     implementation(kotlin("stdlib-jdk8"))
     implementation("io.github.openfeign:feign-okhttp")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
