@@ -1,7 +1,7 @@
 package demo.craft.user.profile.mapper
 
-import demo.craft.user.profile.common.domain.domain.entity.Address
-import demo.craft.user.profile.common.domain.domain.entity.BusinessProfile
+import demo.craft.user.profile.domain.entity.Address
+import demo.craft.user.profile.domain.entity.BusinessProfile
 
 fun BusinessProfile.toApiModel(): demo.craft.user.profile.model.BusinessProfile =
     demo.craft.user.profile.model.BusinessProfile(

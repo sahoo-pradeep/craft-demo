@@ -1,10 +1,10 @@
 package demo.craft.user.profile.mapper
 
-import demo.craft.model.kafka.BusinessProfileChangeRequestKafkaPayload
-import demo.craft.user.profile.common.domain.domain.entity.BusinessProfile
-import demo.craft.user.profile.common.domain.domain.entity.BusinessProfileChangeRequest
-import demo.craft.user.profile.common.domain.domain.enums.ChangeRequestOperation
-import demo.craft.user.profile.common.domain.domain.enums.ChangeRequestStatus
+import demo.craft.user.profile.domain.entity.BusinessProfile
+import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
+import demo.craft.user.profile.domain.enums.ChangeRequestOperation
+import demo.craft.user.profile.domain.enums.ChangeRequestStatus
+import demo.craft.user.profile.domain.kafka.BusinessProfileChangeRequestKafkaPayload
 import java.util.UUID
 
 fun BusinessProfile.toChangeRequest(operation: ChangeRequestOperation): BusinessProfileChangeRequest =

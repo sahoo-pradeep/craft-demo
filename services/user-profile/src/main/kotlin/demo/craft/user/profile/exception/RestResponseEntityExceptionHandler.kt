@@ -1,10 +1,10 @@
 package demo.craft.user.profile.exception
 
-import demo.craft.user.profile.common.domain.exception.BusinessProfileAlreadyExistsException
-import demo.craft.user.profile.common.domain.exception.BusinessProfileNotFoundException
-import demo.craft.user.profile.common.domain.exception.BusinessProfileUpdateAlreadyInProgressException
-import demo.craft.user.profile.common.domain.exception.InvalidBusinessProfileException
-import demo.craft.user.profile.common.domain.exception.UserProfileException
+import demo.craft.user.profile.common.exception.BusinessProfileAlreadyExistsException
+import demo.craft.user.profile.common.exception.BusinessProfileNotFoundException
+import demo.craft.user.profile.common.exception.BusinessProfileUpdateAlreadyInProgressException
+import demo.craft.user.profile.common.exception.InvalidBusinessProfileException
+import demo.craft.user.profile.common.exception.UserProfileException
 import kotlin.reflect.KClass
 import mu.KotlinLogging
 import org.springframework.http.HttpHeaders

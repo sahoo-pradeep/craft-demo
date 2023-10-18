@@ -1,11 +1,11 @@
 package demo.craft.user.profile.dao.access.impl.rds
 
-import demo.craft.user.profile.common.domain.domain.entity.BusinessProfileChangeRequest
-import demo.craft.user.profile.common.domain.domain.enums.ChangeRequestStatus
-import demo.craft.user.profile.common.domain.exception.BusinessProfileUpdateAlreadyInProgressException
+import demo.craft.user.profile.common.exception.BusinessProfileUpdateAlreadyInProgressException
 import demo.craft.user.profile.dao.access.BusinessProfileChangeRequestAccess
 import demo.craft.user.profile.dao.repository.AddressRepository
 import demo.craft.user.profile.dao.repository.BusinessProfileChangeRequestRepository
+import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
+import demo.craft.user.profile.domain.enums.ChangeRequestStatus
 import javax.transaction.Transactional
 import org.springframework.stereotype.Component
 

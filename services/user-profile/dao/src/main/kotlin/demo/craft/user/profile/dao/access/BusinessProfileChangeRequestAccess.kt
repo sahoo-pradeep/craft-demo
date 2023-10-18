@@ -1,7 +1,7 @@
 package demo.craft.user.profile.dao.access
 
-import demo.craft.user.profile.common.domain.domain.entity.BusinessProfileChangeRequest
-import demo.craft.user.profile.common.domain.domain.enums.ChangeRequestStatus
+import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
+import demo.craft.user.profile.domain.enums.ChangeRequestStatus
 
 interface BusinessProfileChangeRequestAccess {
     /**

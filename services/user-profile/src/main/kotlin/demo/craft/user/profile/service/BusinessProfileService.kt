@@ -3,17 +3,16 @@ package demo.craft.user.profile.service
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import demo.craft.communication.kafka.KafkaPublisher
-import demo.craft.user.profile.common.domain.config.UserProfileProperties
-import demo.craft.user.profile.common.domain.domain.entity.BusinessProfile
-import demo.craft.user.profile.common.domain.domain.entity.BusinessProfileChangeRequest
-import demo.craft.user.profile.common.domain.domain.enums.ChangeRequestOperation
-import demo.craft.user.profile.common.domain.exception.BusinessProfileAlreadyExistsException
-import demo.craft.user.profile.common.domain.exception.BusinessProfileNotFoundException
-import demo.craft.user.profile.common.domain.exception.InvalidBusinessProfileException
-import demo.craft.user.profile.common.domain.exception.InvalidFieldAdditionalInfo
+import demo.craft.common.communication.kafka.KafkaPublisher
+import demo.craft.user.profile.common.config.UserProfileProperties
+import demo.craft.user.profile.common.exception.BusinessProfileAlreadyExistsException
+import demo.craft.user.profile.common.exception.BusinessProfileNotFoundException
+import demo.craft.user.profile.common.exception.InvalidBusinessProfileException
 import demo.craft.user.profile.dao.access.BusinessProfileAccess
 import demo.craft.user.profile.dao.access.BusinessProfileChangeRequestAccess
+import demo.craft.user.profile.domain.entity.BusinessProfile
+import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
+import demo.craft.user.profile.domain.enums.ChangeRequestOperation
 import demo.craft.user.profile.mapper.toChangeRequest
 import demo.craft.user.profile.mapper.toKafkaPayload
 import mu.KotlinLogging
@@ -41,7 +40,7 @@ class BusinessProfileService(
     fun createBusinessProfile(businessProfile: BusinessProfile): BusinessProfileChangeRequest {
         val invalidFields = businessProfile.validateFields()
         if (invalidFields.isNotEmpty()) {
-            throw InvalidBusinessProfileException(businessProfile.userId, InvalidFieldAdditionalInfo(invalidFields))
+            throw InvalidBusinessProfileException(businessProfile.userId, "TODO")
         }
 
         businessProfileAccess.findByUserId(businessProfile.userId)?.let {
@@ -49,7 +48,11 @@ class BusinessProfileService(
         }
 
         val changeRequest =
-            businessProfileChangeRequestAccess.createChangeRequest(businessProfile.toChangeRequest(ChangeRequestOperation.CREATE))
+            businessProfileChangeRequestAccess.createChangeRequest(
+                businessProfile.toChangeRequest(
+                    ChangeRequestOperation.CREATE
+                )
+            )
         log.info { "Request to create business profile is created successfully with requestUuid: ${changeRequest.requestId} " }
 
         kafkaPublisher.publish(
@@ -64,14 +67,18 @@ class BusinessProfileService(
     fun updateBusinessProfile(businessProfile: BusinessProfile): BusinessProfileChangeRequest {
         val invalidFields = businessProfile.validateFields()
         if (invalidFields.isNotEmpty()) {
-            throw InvalidBusinessProfileException(businessProfile.userId, InvalidFieldAdditionalInfo(invalidFields))
+            throw InvalidBusinessProfileException(businessProfile.userId, "")
         }
 
         // ensures that business profile is already created
         getBusinessProfile(businessProfile.userId)
 
         val changeRequest =
-            businessProfileChangeRequestAccess.createChangeRequest(businessProfile.toChangeRequest(ChangeRequestOperation.UPDATE))
+            businessProfileChangeRequestAccess.createChangeRequest(
+                businessProfile.toChangeRequest(
+                    ChangeRequestOperation.UPDATE
+                )
+            )
         log.info { "Request to update business profile is created successfully with requestUuid: ${changeRequest.requestId} " }
 
         kafkaPublisher.publish(

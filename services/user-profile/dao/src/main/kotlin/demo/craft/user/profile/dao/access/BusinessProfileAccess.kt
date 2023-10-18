@@ -1,7 +1,7 @@
 package demo.craft.user.profile.dao.access
 
-import demo.craft.user.profile.common.domain.domain.entity.BusinessProfile
-import demo.craft.user.profile.common.domain.exception.BusinessProfileAlreadyExistsException
+import demo.craft.user.profile.common.exception.BusinessProfileAlreadyExistsException
+import demo.craft.user.profile.domain.entity.BusinessProfile
 
 interface BusinessProfileAccess {
     /**

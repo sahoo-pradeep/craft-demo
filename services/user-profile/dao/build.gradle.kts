@@ -7,6 +7,7 @@ plugins {
 dependencies {
     // internal modules
     implementation(project(":services:user-profile:common"))
+    implementation(project(":services:user-profile:domain"))
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")

@@ -5,6 +5,8 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":common:domain"))
+
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")

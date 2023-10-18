@@ -3,10 +3,13 @@ demo:
     communication:
       kafka:
         bootstrapServers: "localhost:9092"
+        consumer:
+          groupId: "user-profile"
     user-profile:
       businessProfile:
         kafka:
           changeRequestTopicName: "business-profile-change-request"
+          changeRequestProductTopicName: "business-profile-change-request-product"
 
 spring:
   application:

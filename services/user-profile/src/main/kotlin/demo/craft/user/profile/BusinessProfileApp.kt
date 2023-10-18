@@ -1,7 +1,7 @@
 package demo.craft.user.profile
 
-import demo.craft.communication.config.CommunicationProperties
-import demo.craft.user.profile.common.domain.config.UserProfileProperties
+import demo.craft.common.communication.config.CommunicationProperties
+import demo.craft.user.profile.common.config.UserProfileProperties
 import java.time.ZoneId
 import java.util.TimeZone
 import org.springframework.boot.SpringApplication
