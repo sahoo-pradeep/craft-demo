@@ -5,8 +5,14 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":common:domain"))
+    // internal modules
+    implementation(project(":services:user-profile:common"))
 
+    // integrations clients
+//    const val lmsClient = "money.jupiter.lms:client:$lmsVersion"
+    implementation("demo.craft:product-subscription-client:0.0.1-SNAPSHOT")
+
+    // external dependencies
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -18,6 +24,10 @@ dependencies {
     implementation("io.github.openfeign:feign-okhttp")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("io.micrometer:micrometer-registry-prometheus") // metrics and tracing
+
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign") // spring feign
+    implementation("io.github.openfeign:feign-okhttp:10.9") // feign
+    implementation("io.github.openfeign:feign-jackson")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")

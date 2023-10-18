@@ -11,6 +11,7 @@ dependencies {
     implementation(project(":services:user-profile:common"))
     implementation(project(":services:user-profile:dao"))
     implementation(project(":services:user-profile:domain"))
+    implementation(project(":services:user-profile:integration"))
 
     // internal libs
     implementation("demo.craft:common-communication:0.0.1-SNAPSHOT")

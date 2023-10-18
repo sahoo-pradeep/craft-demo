@@ -2,14 +2,17 @@ demo:
   craft:
     communication:
       kafka:
-        bootstrapServers: "localhost:9092"
+        bootstrapServers: 'localhost:9092'
         consumer:
-          groupId: "user-profile"
+          groupId: 'user-profile'
     user-profile:
       businessProfile:
         kafka:
-          changeRequestTopicName: "business-profile-change-request"
-          changeRequestProductTopicName: "business-profile-change-request-product"
+          changeRequestTopicName: 'business-profile-change-request'
+          changeRequestProductTopicName: 'wbusiness-profile-change-request-product'
+      integration:
+        productSubscription:
+          url: 'http://localhost:8081'
 
 spring:
   application:
