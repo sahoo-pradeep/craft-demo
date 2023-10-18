@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: product-subscription
+  main:
+    banner-mode: off
+  datasource:
+    name: product_subscription
+    url: jdbc:postgresql://localhost:5432/product_subscription
+    username: product_subscription
+    password: product_subscription
+    hikari:
+      minimumIdle: 10
+      maximumPoolSize: 25
+      data-source-properties:
+        #loggerLevel: TRACE
+        logUnclosedConnections: true
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        generate_statistics: false
+    show-sql: false
+  flyway:
+    connectRetries: 20
+    baselineOnMigrate: true
+    baselineVersion: 0
+    locations: classpath:db/migration
+
+logging:
+  level:
+    demo.craft.product.subscription: INFO
+    org:
+      springframework:
+        web.filter.CommonsRequestLoggingFilter: DEBUG
+#      hibernate:
+#        SQL: DEBUG
+#        type:
+#          descriptor:
+#            sql:
+#              BasicBinder: TRACE
+
+server:
+  port: 8081
+  shutdown: graceful
+  lifecycle:
+    timeout-per-shutdown-phase: 15

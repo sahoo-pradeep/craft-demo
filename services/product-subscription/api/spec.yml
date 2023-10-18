@@ -1,0 +1,125 @@
+openapi: 3.0.0
+info:
+  title: Product Subscription
+  description: Open API spec for Product Subscription
+  version: 0.0.1
+servers:
+  - url: "http://localhost:8081"
+paths:
+  /product-subscription/v1/product-subscription:
+    get:
+      tags:
+        - product-subscription
+      operationId: getAllProductSubscriptions
+      summary: Get all product subscriptions of the user
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      responses:
+        "200":
+          description: Product subscriptions of the user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetAllProductSubscriptionsResponse"
+    post:
+      tags:
+        - product-subscription
+      operationId: saveProductSubscription
+      summary: Save product subscription of the user
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SaveProductSubscriptionRequest"
+      responses:
+        "200":
+          description: Product subscription saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SaveProductSubscriptionResponse"
+    put:
+      tags:
+        - product-subscription
+      operationId: updateProductSubscription
+      summary: Update product subscription of the user
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProductSubscriptionRequest"
+      responses:
+        "200":
+          description: Product subscription updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateProductSubscriptionResponse"
+components:
+  parameters:
+    userId:
+      in: header
+      name: x-user-id
+      required: true
+      schema:
+        type: string
+  schemas:
+    ProductSubscription:
+      type: object
+      required:
+        - product
+        - status
+      properties:
+        product:
+          $ref: "#/components/schemas/Product"
+        status:
+          $ref: "#/components/schemas/ProductSubscriptionStatus"
+    Product:
+      type: string
+      enum: [ QUICKBOOKS_ACCOUNTING, QUICKBOOKS_PAYROLL, QUICKBOOKS_PAYMENTS, TSHEETS ]
+    ProductSubscriptionStatus:
+      type: string
+      enum: [ ACTIVE, CLOSED ]
+    GetAllProductSubscriptionsResponse:
+      type: object
+      required:
+        - productSubscriptions
+      properties:
+        productSubscriptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductSubscription"
+    SaveProductSubscriptionRequest:
+      type: object
+      required:
+        - productSubscription
+      properties:
+        productSubscription:
+          $ref: "#/components/schemas/ProductSubscription"
+    SaveProductSubscriptionResponse:
+      type: object
+      required:
+        - productSubscription
+      properties:
+        productSubscription:
+          $ref: "#/components/schemas/ProductSubscription"
+    UpdateProductSubscriptionRequest:
+      type: object
+      required:
+        - productSubscription
+      properties:
+        productSubscription:
+          $ref: "#/components/schemas/ProductSubscription"
+    UpdateProductSubscriptionResponse:
+      type: object
+      required:
+        - productSubscription
+      properties:
+        productSubscription:
+          $ref: "#/components/schemas/ProductSubscription"

@@ -7,10 +7,10 @@ plugins {
 
 dependencies {
     // internal modules
-    implementation(project(":services:user-profile:api:server-stub"))
-    implementation(project(":services:user-profile:common"))
-    implementation(project(":services:user-profile:dao"))
-    implementation(project(":services:user-profile:domain"))
+    implementation(project(":services:product-subscription:api:server-stub"))
+    implementation(project(":services:product-subscription:common"))
+    implementation(project(":services:product-subscription:dao"))
+    implementation(project(":services:product-subscription:domain"))
 
     // internal libs
     implementation("demo.craft:common-communication:0.0.1-SNAPSHOT")

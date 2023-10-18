@@ -1,23 +1,20 @@
 plugins {
     kotlin("jvm")
+    kotlin("plugin.jpa")
     kotlin("plugin.spring")
     id("maven-publish")
 }
 
 dependencies {
-    // external dependencies
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    implementation("org.springframework.boot:spring-boot-autoconfigure")
+    // internal libraries
+    implementation("demo.craft:common-domain:0.0.1-SNAPSHOT")
+
+    // external libraries
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0") // jackson
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2")
-    implementation("io.github.microutils:kotlin-logging:1.7.9") // logging
     implementation(kotlin("stdlib-jdk8"))
-	implementation("org.springframework.kafka:spring-kafka") // kafka
-    implementation("io.micrometer:micrometer-registry-prometheus") // metrics and tracing
-
-    testImplementation("org.assertj:assertj-core:3.24.2")
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
 
     // BOM imports
     implementation(platform("org.springframework.boot:spring-boot-dependencies:2.7.16"))
@@ -35,7 +32,7 @@ tasks.test {
 publishing {
     publications {
         create<MavenPublication>("jar") {
-            artifactId = "common-communication"
+            artifactId = "product-subscription-domain"
             from(components["java"])
         }
     }
