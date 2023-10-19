@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @SpringBootApplication(
     scanBasePackages = [
         "demo.craft.user.profile",
-        "demo.craft.communication" // for kafka publisher
+        "demo.craft.common.communication" // for kafka publisher
     ]
 )
 @ConfigurationPropertiesScan(

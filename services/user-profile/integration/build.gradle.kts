@@ -9,8 +9,7 @@ dependencies {
     implementation(project(":services:user-profile:common"))
 
     // integrations clients
-//    const val lmsClient = "money.jupiter.lms:client:$lmsVersion"
-    implementation("demo.craft:product-subscription-client:0.0.1-SNAPSHOT")
+    implementation("demo.craft:product-subscription-client:0.0.2-SNAPSHOT")
 
     // external dependencies
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -21,13 +20,11 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:1.7.9") // logging
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation(kotlin("stdlib-jdk8"))
-    implementation("io.github.openfeign:feign-okhttp")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("io.micrometer:micrometer-registry-prometheus") // metrics and tracing
-
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign") // spring feign
-    implementation("io.github.openfeign:feign-okhttp:10.9") // feign
-    implementation("io.github.openfeign:feign-jackson")
+    implementation("org.springframework.cloud:spring-cloud-openfeign-core")
+    implementation("io.github.openfeign:feign-okhttp:10.9")
+    implementation("io.github.openfeign:feign-jackson:10.9")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
@@ -37,7 +34,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
 
     // BOM imports
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:2.7.16"))
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:2.6.1"))
     implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2021.0.0"))
 }
 

@@ -25,7 +25,7 @@ dependencies {
     }
 
     // BOM imports
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:2.7.16"))
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:2.6.1"))
 }
 
 val serverPath = "$rootDir/services/user-profile/api/server-stub"

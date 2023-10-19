@@ -9,7 +9,7 @@ dependencies {
     implementation(project(":services:product-subscription:common"))
     implementation(project(":services:product-subscription:domain"))
 
-    implementation("demo.craft:common-domain:0.0.1-SNAPSHOT")
+    implementation("demo.craft:common-domain:0.0.2-SNAPSHOT")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -32,7 +32,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
 
     // BOM imports
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:2.7.16"))
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:2.6.1"))
     implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2021.0.0"))
 }
 

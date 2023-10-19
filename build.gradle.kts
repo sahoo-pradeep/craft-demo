@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.7.16" apply false // Only applied in services modules
+	id("org.springframework.boot") version "2.6.1" apply false // Only applied in services modules
 	id("org.openapi.generator") version "4.3.0" apply false // open api generator
 
 	kotlin("jvm") version "1.6.21"
@@ -13,7 +13,7 @@ allprojects {
 	apply(plugin = "java")
 
 	group = "demo.craft"
-	version = "0.0.1-SNAPSHOT"
+	version = "0.0.2-SNAPSHOT"
 	java.sourceCompatibility = JavaVersion.VERSION_11
 
 	tasks.withType<KotlinCompile> {
