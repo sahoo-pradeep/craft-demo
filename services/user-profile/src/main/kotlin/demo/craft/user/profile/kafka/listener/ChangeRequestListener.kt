@@ -44,8 +44,10 @@ class ChangeRequestListener(
         val message = objectMapper.readValue(kafkaMessage, BusinessProfileChangeRequestKafkaPayload::class.java)
 
         if (changeRequestProductStatusRepository.existsByRequestId(message.requestId)) {
-            log.error { "Change request is already published to subscribed products. " +
-                "Ignoring publishing change request: $kafkaMessage" }
+            log.error {
+                "Change request is already published to subscribed products. " +
+                    "Ignoring publishing change request: $kafkaMessage"
+            }
             return
         }
 
@@ -66,7 +68,7 @@ class ChangeRequestListener(
             activeProductSubscriptions.toChangeRequestProductStatuses(message.requestId, ChangeRequestStatus.IN_PROGRESS)
         )
 
-        val kafkaPayload = objectMapper.writeValueAsString(BusinessProfileValidationRequest(currentProfile,changeRequest))
+        val kafkaPayload = objectMapper.writeValueAsString(BusinessProfileValidationRequest(currentProfile, changeRequest))
         kafkaPublisher.publish(kafkaProperties.businessProfileChangeRequestTopic, message.userId.hashCode(), kafkaPayload)
     }
 }

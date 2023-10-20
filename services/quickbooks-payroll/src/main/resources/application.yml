@@ -1,0 +1,25 @@
+demo:
+  craft:
+    quickbooks-payroll:
+      kafka:
+        businessProfileValidationRequestTopic: "business-profile-validation-request"
+        businessProfileValidationResponseTopic: "business-profile-validation-response"
+
+spring:
+  application:
+    name: quickbooks-payroll
+  main:
+    banner-mode: off
+
+logging:
+  level:
+    demo.craft.quickbooks.payroll: INFO
+    org:
+      springframework:
+        web.filter.CommonsRequestLoggingFilter: DEBUG
+
+server:
+  port: 8083
+  shutdown: graceful
+  lifecycle:
+    timeout-per-shutdown-phase: 15

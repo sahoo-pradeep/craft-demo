@@ -2,16 +2,10 @@ package demo.craft.user.profile.domain.entity
 
 import demo.craft.user.profile.domain.enums.ChangeRequestOperation
 import demo.craft.user.profile.domain.enums.ChangeRequestStatus
-import java.time.LocalDateTime
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.OneToOne
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
+import java.time.LocalDateTime
+import javax.persistence.*
 
 @Entity
 data class BusinessProfileChangeRequest(

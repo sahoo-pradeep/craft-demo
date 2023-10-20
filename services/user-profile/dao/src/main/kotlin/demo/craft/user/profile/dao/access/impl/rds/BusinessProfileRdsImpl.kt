@@ -5,8 +5,8 @@ import demo.craft.user.profile.dao.access.BusinessProfileAccess
 import demo.craft.user.profile.dao.repository.AddressRepository
 import demo.craft.user.profile.dao.repository.BusinessProfileRepository
 import demo.craft.user.profile.domain.entity.BusinessProfile
-import javax.transaction.Transactional
 import org.springframework.stereotype.Component
+import javax.transaction.Transactional
 
 @Component
 internal class BusinessProfileRdsImpl(

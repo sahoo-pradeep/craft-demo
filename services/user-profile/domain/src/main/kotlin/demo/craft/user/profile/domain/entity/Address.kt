@@ -4,13 +4,13 @@ import demo.craft.user.profile.domain.enums.AddressFieldName
 import demo.craft.user.profile.domain.enums.FieldName
 import demo.craft.user.profile.domain.model.AddressType
 import demo.craft.user.profile.domain.model.InvalidField
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.UpdateTimestamp
 
 @Entity
 data class Address(

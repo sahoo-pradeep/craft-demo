@@ -1,11 +1,6 @@
 package demo.craft.user.profile.exception
 
-import demo.craft.user.profile.common.exception.BusinessProfileAlreadyExistsException
-import demo.craft.user.profile.common.exception.BusinessProfileNotFoundException
-import demo.craft.user.profile.common.exception.BusinessProfileUpdateAlreadyInProgressException
-import demo.craft.user.profile.common.exception.InvalidBusinessProfileException
-import demo.craft.user.profile.common.exception.UserProfileException
-import kotlin.reflect.KClass
+import demo.craft.user.profile.common.exception.*
 import mu.KotlinLogging
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -14,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import kotlin.reflect.KClass
 
 @ControllerAdvice
 class RestResponseEntityExceptionHandler(

@@ -16,4 +16,6 @@ include("services:product-subscription:common")
 include("services:product-subscription:dao")
 include("services:product-subscription:domain")
 
-include("services:quickbooks-accounting:domain")
+include("services:quickbooks-accounting")
+include("services:quickbooks-payroll")
+

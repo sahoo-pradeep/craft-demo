@@ -3,11 +3,7 @@ package demo.craft.user.profile.controller
 import demo.craft.user.profile.api.BusinessProfileApi
 import demo.craft.user.profile.mapper.toApiModel
 import demo.craft.user.profile.mapper.toDomainModel
-import demo.craft.user.profile.model.CreateBusinessProfileRequest
-import demo.craft.user.profile.model.CreateBusinessProfileResponse
-import demo.craft.user.profile.model.GetBusinessProfileResponse
-import demo.craft.user.profile.model.UpdateBusinessProfileRequest
-import demo.craft.user.profile.model.UpdateBusinessProfileResponse
+import demo.craft.user.profile.model.*
 import demo.craft.user.profile.service.BusinessProfileService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController

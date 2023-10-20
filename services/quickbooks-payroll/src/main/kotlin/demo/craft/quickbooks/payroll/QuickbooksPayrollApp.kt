@@ -1,25 +1,18 @@
 package demo.craft.product.subscription
 
-import demo.craft.product.subscription.common.config.ProductSubscriptionProperties
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import java.time.ZoneId
 import java.util.*
 
 @SpringBootApplication(
     scanBasePackages = [
-        "demo.craft.product.subscription",
+        "demo.craft.quickbooks.payroll",
     ]
 )
-@ConfigurationPropertiesScan(
-    basePackageClasses = [
-        ProductSubscriptionProperties::class,
-    ]
-)
-@EnableJpaRepositories
-class ProductSubscriptionApp {
+@ConfigurationPropertiesScan
+class QuickbooksPayrollApp {
     init {
         TimeZone.setDefault(TIME_ZONE_UTC)
     }
@@ -29,7 +22,7 @@ class ProductSubscriptionApp {
 
         @JvmStatic
         fun main(args: Array<String>) {
-            SpringApplication.run(ProductSubscriptionApp::class.java, *args)
+            SpringApplication.run(QuickbooksPayrollApp::class.java, *args)
         }
     }
 }

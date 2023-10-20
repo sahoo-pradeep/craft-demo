@@ -6,8 +6,8 @@ import demo.craft.user.profile.dao.repository.AddressRepository
 import demo.craft.user.profile.dao.repository.BusinessProfileChangeRequestRepository
 import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
 import demo.craft.user.profile.domain.enums.ChangeRequestStatus
-import javax.transaction.Transactional
 import org.springframework.stereotype.Component
+import javax.transaction.Transactional
 
 @Component
 internal class BusinessProfileChangeRequestRdsImpl(
