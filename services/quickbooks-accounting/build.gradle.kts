@@ -1,25 +1,25 @@
 plugins {
+    id("org.springframework.boot")
+
     kotlin("jvm")
-    kotlin("plugin.jpa")
     kotlin("plugin.spring")
 }
 
 dependencies {
-    // internal modules
-    implementation(project(":services:user-profile:common"))
-    implementation(project(":services:user-profile:domain"))
 
     // internal libs
+    implementation("demo.craft:common-communication:0.0.2-SNAPSHOT")
     implementation("demo.craft:common-domain:0.0.2-SNAPSHOT")
+    implementation("demo.craft:user-profile-domain:0.0.2-SNAPSHOT")
 
+    // external libs
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.postgresql:postgresql") // postgres database
-    implementation("org.flywaydb:flyway-core:6.5.2") // db migration
+    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0") // jackson
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2")
     implementation("io.github.microutils:kotlin-logging:1.7.9") // logging
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.springframework.kafka:spring-kafka")
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("io.micrometer:micrometer-registry-prometheus") // metrics and tracing

@@ -6,10 +6,9 @@ demo:
         consumer:
           groupId: 'user-profile'
     user-profile:
-      businessProfile:
-        kafka:
-          changeRequestTopicName: 'business-profile-change-request'
-          changeRequestProductTopicName: 'wbusiness-profile-change-request-product'
+      kafka:
+        businessProfileValidationRequestTopic: 'business-profile-validation-request'
+        businessProfileValidationResponseTopic: 'business-profile-validation-response'
       integration:
         productSubscription:
           url: 'http://localhost:8081'

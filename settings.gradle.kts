@@ -15,3 +15,5 @@ include("services:product-subscription:api:server-stub")
 include("services:product-subscription:common")
 include("services:product-subscription:dao")
 include("services:product-subscription:domain")
+
+include("services:quickbooks-accounting:domain")

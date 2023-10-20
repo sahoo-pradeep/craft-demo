@@ -1,0 +1,25 @@
+demo:
+  craft:
+    quickbooks-accounting:
+      kafka:
+        businessProfileValidationRequestTopic: "business-profile-validation-request"
+        businessProfileValidationResponseTopic: "business-profile-validation-response"
+
+spring:
+  application:
+    name: quickbooks-accounting
+  main:
+    banner-mode: off
+
+logging:
+  level:
+    demo.craft.quickbooks.accounting: INFO
+    org:
+      springframework:
+        web.filter.CommonsRequestLoggingFilter: DEBUG
+
+server:
+  port: 8082
+  shutdown: graceful
+  lifecycle:
+    timeout-per-shutdown-phase: 15

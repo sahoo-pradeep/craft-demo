@@ -4,16 +4,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties("demo.craft.user-profile")
 class UserProfileProperties {
-    val businessProfile = BusinessProfileProperties()
+    val kafka = Kafka()
     val integration = IntegrationProperties()
 
-    class BusinessProfileProperties {
-        val kafka = Kafka()
-
-        class Kafka {
-            lateinit var changeRequestTopicName: String
-            lateinit var changeRequestProductTopicName: String
-        }
+    class Kafka {
+        lateinit var businessProfileChangeRequestTopic: String
+        lateinit var businessProfileValidationRequestTopic: String
+        lateinit var businessProfileValidationResponseTopic: String
     }
 
     class IntegrationProperties {

@@ -14,17 +14,20 @@ internal class BusinessProfileChangeRequestRdsImpl(
     private val businessProfileChangeRequestRepository: BusinessProfileChangeRequestRepository,
     private val addressRepository: AddressRepository,
 ) : BusinessProfileChangeRequestAccess {
-    override fun getChangeRequests(
+    override fun findByUserIdAndStatus(
         userId: String, status: ChangeRequestStatus?
     ): List<BusinessProfileChangeRequest> =
         status?.let { businessProfileChangeRequestRepository.findAllByUserIdAndStatus(userId, it) }
             ?: businessProfileChangeRequestRepository.findAllByUserId(userId)
 
+    override fun findByRequestId(requestId: String): BusinessProfileChangeRequest? =
+        businessProfileChangeRequestRepository.findByRequestId(requestId)
+
     @Transactional
     override fun createChangeRequest(
         businessProfileChangeRequest: BusinessProfileChangeRequest
     ): BusinessProfileChangeRequest {
-        if (getChangeRequests(businessProfileChangeRequest.userId, ChangeRequestStatus.IN_PROGRESS).isNotEmpty()) {
+        if (findByUserIdAndStatus(businessProfileChangeRequest.userId, ChangeRequestStatus.IN_PROGRESS).isNotEmpty()) {
             throw BusinessProfileUpdateAlreadyInProgressException(businessProfileChangeRequest.userId)
         }
 

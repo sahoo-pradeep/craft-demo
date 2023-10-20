@@ -16,6 +16,7 @@ dependencies {
     // internal libs
     implementation("demo.craft:common-communication:0.0.2-SNAPSHOT")
     implementation("demo.craft:common-domain:0.0.2-SNAPSHOT")
+    implementation("demo.craft:product-subscription-client:0.0.2-SNAPSHOT")
 
     // external libs
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
@@ -31,7 +32,6 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("io.github.openfeign:feign-okhttp")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-//    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation("io.micrometer:micrometer-registry-prometheus") // metrics and tracing
 
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
@@ -40,6 +40,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.mockito:mockito-core:2.21.0")
 
     // BOM imports
     implementation(platform("org.springframework.boot:spring-boot-dependencies:2.6.1"))
