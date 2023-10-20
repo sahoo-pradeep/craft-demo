@@ -9,7 +9,7 @@ dependencies {
     implementation(project(":services:user-profile:common"))
 
     // integrations clients
-    implementation("demo.craft:product-subscription-client:0.0.2-SNAPSHOT")
+    implementation("demo.craft:product-subscription-client:0.0.3-SNAPSHOT")
 
     // external dependencies
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

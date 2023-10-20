@@ -7,7 +7,7 @@ plugins {
 
 dependencies {
     // internal libraries
-    implementation("demo.craft:common-domain:0.0.2-SNAPSHOT")
+    implementation("demo.craft:common-domain:0.0.3-SNAPSHOT")
 
     // external libraries
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")

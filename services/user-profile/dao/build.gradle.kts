@@ -10,7 +10,7 @@ dependencies {
     implementation(project(":services:user-profile:domain"))
 
     // internal libs
-    implementation("demo.craft:common-domain:0.0.2-SNAPSHOT")
+    implementation("demo.craft:common-domain:0.0.3-SNAPSHOT")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")

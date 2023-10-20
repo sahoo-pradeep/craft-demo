@@ -26,7 +26,7 @@ class BusinessProfileService(
     userProfileProperties: UserProfileProperties,
 ) {
     private val log = KotlinLogging.logger {}
-    private val businessProfileProperties = userProfileProperties.businessProfile
+    private val kafkaProperties = userProfileProperties.kafka
     private val objectMapper = jacksonObjectMapper().apply {
         registerModule(JavaTimeModule()) // Register JavaTimeModule to handle Java 8 date/time types
         configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
@@ -56,7 +56,7 @@ class BusinessProfileService(
         log.info { "Request to create business profile is created successfully with requestUuid: ${changeRequest.requestId} " }
 
         kafkaPublisher.publish(
-            businessProfileProperties.kafka.changeRequestTopicName,
+            kafkaProperties.businessProfileChangeRequestTopic,
             businessProfile.userId.hashCode(),
             objectMapper.writeValueAsString(changeRequest.toKafkaPayload())
         )
@@ -82,7 +82,7 @@ class BusinessProfileService(
         log.info { "Request to update business profile is created successfully with requestUuid: ${changeRequest.requestId} " }
 
         kafkaPublisher.publish(
-            businessProfileProperties.kafka.changeRequestTopicName,
+            kafkaProperties.businessProfileChangeRequestTopic,
             businessProfile.userId.hashCode(),
             objectMapper.writeValueAsString(changeRequest.toKafkaPayload())
         )
