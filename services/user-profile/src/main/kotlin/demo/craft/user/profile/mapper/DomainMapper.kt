@@ -13,6 +13,7 @@ import java.util.*
 fun BusinessProfile.toChangeRequest(operation: ChangeRequestOperation): BusinessProfileChangeRequest =
     BusinessProfileChangeRequest(
         requestId = UUID.randomUUID().toString(),
+        userId = this.userId,
         operation = operation,
         companyName = this.companyName,
         legalName = this.legalName,
@@ -22,8 +23,20 @@ fun BusinessProfile.toChangeRequest(operation: ChangeRequestOperation): Business
         ein = this.ein,
         email = this.email,
         website = this.website,
-        userId = this.userId,
         status = ChangeRequestStatus.init()
+    )
+
+fun BusinessProfileChangeRequest.toBusinessProfile(): BusinessProfile =
+    BusinessProfile(
+        userId = this.userId,
+        companyName = this.companyName,
+        legalName = this.legalName,
+        businessAddress = this.businessAddress,
+        legalAddress = this.legalAddress,
+        pan = this.pan,
+        ein = this.ein,
+        email = this.email,
+        website = this.website,
     )
 
 fun BusinessProfileChangeRequest.toKafkaPayload(): BusinessProfileChangeRequestKafkaPayload =

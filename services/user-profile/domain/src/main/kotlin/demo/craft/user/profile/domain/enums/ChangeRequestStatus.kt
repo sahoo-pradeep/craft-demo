@@ -9,4 +9,10 @@ enum class ChangeRequestStatus {
         // Initial status for update request
         fun init(): ChangeRequestStatus = IN_PROGRESS
     }
+
+    fun isTerminal(): Boolean =
+        when (this) {
+            ACCEPTED, REJECTED -> true
+            else -> false
+        }
 }

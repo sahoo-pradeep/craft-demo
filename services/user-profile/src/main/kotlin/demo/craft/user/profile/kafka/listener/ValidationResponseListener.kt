@@ -4,6 +4,11 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import demo.craft.user.profile.common.config.UserProfileProperties
+import demo.craft.user.profile.dao.access.BusinessProfileAccess
+import demo.craft.user.profile.dao.access.BusinessProfileChangeRequestAccess
+import demo.craft.user.profile.dao.access.ChangeRequestFailureReasonAccess
+import demo.craft.user.profile.dao.access.ChangeRequestProductStatusAccess
+import demo.craft.user.profile.domain.enums.ChangeRequestStatus
 import demo.craft.user.profile.domain.kafka.BusinessProfileValidationResponse
 import mu.KotlinLogging
 import org.springframework.kafka.annotation.KafkaListener
@@ -11,6 +16,10 @@ import org.springframework.stereotype.Component
 
 @Component
 class ValidationResponseListener(
+    private val businessProfileAccess: BusinessProfileAccess,
+    private val businessProfileChangeRequestAccess: BusinessProfileChangeRequestAccess,
+    private val changeRequestProductStatusRepository: ChangeRequestProductStatusAccess,
+    private val changeRequestFailureReasonAccess: ChangeRequestFailureReasonAccess,
     private val userProfileProperties: UserProfileProperties
 ) {
     private val log = KotlinLogging.logger {}
@@ -20,18 +29,50 @@ class ValidationResponseListener(
     }
 
     @KafkaListener(
-        id = "ChangeRequestProductListener",
+        id = "ValidationResponseListener",
         topics = ["\${demo.craft.user-profile.businessProfile.kafka.changeRequestProductTopicName}"]
     )
     fun onMessage(kafkaMessage: String) {
         val topicName = userProfileProperties.kafka.businessProfileValidationResponseTopic
         log.info { "Received kafka message. Topic: $topicName. Message: $kafkaMessage" }
-        val message = objectMapper.readValue(kafkaMessage, BusinessProfileValidationResponse::class.java)
-        // update status in change request product status
-        // add errors if exist
-        // get all the product status.
-        // if all the status are approved -> change the change request as approved and update business profile
-        // if any status is rejected and change request is not rejected yet, mark it rejected
-        // if pending -> no change in change requests status
+        val validationResponse = objectMapper.readValue(kafkaMessage, BusinessProfileValidationResponse::class.java)
+
+        changeRequestProductStatusRepository.findByRequestIdAndProduct(validationResponse.requestId, validationResponse.product)?.let {
+            if (it.status.isTerminal()) {
+                log.warn { "Validation status for given product is already in terminal state. payload: $kafkaMessage" }
+                return
+            }
+        } ?: log.error { "Investigate! Change request product status not found. payload: $kafkaMessage" }.run { return }
+
+        changeRequestProductStatusRepository
+            .updateStatus(validationResponse.requestId, validationResponse.product, validationResponse.status)
+
+        if (validationResponse.status == ChangeRequestStatus.REJECTED && validationResponse.failureReasons.isNotEmpty()) {
+            changeRequestFailureReasonAccess.saveAllFailureReason(
+                validationResponse.requestId,
+                validationResponse.product,
+                validationResponse.failureReasons
+            )
+        }
+
+        val changeRequest = businessProfileChangeRequestAccess.findByRequestId(validationResponse.requestId)!!
+
+        if (changeRequest.status == ChangeRequestStatus.REJECTED) {
+            // no need to update change request status
+            return
+        }
+
+        val changeRequestProductStatuses = changeRequestProductStatusRepository.findByRequestId(validationResponse.requestId)
+
+        if (changeRequestProductStatuses.any { it.status == ChangeRequestStatus.REJECTED }) {
+            businessProfileChangeRequestAccess.updateStatus(validationResponse.requestId, ChangeRequestStatus.REJECTED)
+            return
+        }
+
+        if (changeRequestProductStatuses.all { it.status == ChangeRequestStatus.ACCEPTED }) {
+            businessProfileChangeRequestAccess.updateStatus(validationResponse.requestId, ChangeRequestStatus.ACCEPTED)
+            businessProfileAccess.updateBusinessProfile(changeRequest)
+            return
+        }
     }
 }

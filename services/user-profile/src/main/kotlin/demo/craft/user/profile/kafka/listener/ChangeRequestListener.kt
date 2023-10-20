@@ -35,7 +35,7 @@ class ChangeRequestListener(
     private val kafkaProperties = userProfileProperties.kafka
 
     @KafkaListener(
-        id = "BusinessProfileChangeRequestListener",
+        id = "ChangeRequestListener",
         topics = ["\${demo.craft.user-profile.businessProfile.kafka.changeRequestTopicName}"]
     )
     fun onMessage(kafkaMessage: String) {
@@ -64,7 +64,7 @@ class ChangeRequestListener(
             return
         }
 
-        changeRequestProductStatusRepository.saveAll(
+        changeRequestProductStatusRepository.createNewEntries(
             activeProductSubscriptions.toChangeRequestProductStatuses(message.requestId, ChangeRequestStatus.IN_PROGRESS)
         )
 

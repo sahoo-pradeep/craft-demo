@@ -19,4 +19,6 @@ interface BusinessProfileChangeRequestAccess {
      * @throws [BusinessProfileUpdateAlreadyInProgressException] if change request is already in progress
      */
     fun createChangeRequest(businessProfileChangeRequest: BusinessProfileChangeRequest): BusinessProfileChangeRequest
+
+    fun updateStatus(requestId: String, updatedStatus: ChangeRequestStatus): BusinessProfileChangeRequest
 }
