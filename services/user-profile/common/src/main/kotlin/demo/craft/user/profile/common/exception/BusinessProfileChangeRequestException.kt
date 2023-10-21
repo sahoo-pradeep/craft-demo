@@ -1,10 +1,19 @@
 package demo.craft.user.profile.common.exception
 
 class BusinessProfileUpdateAlreadyInProgressException(userId: String) :
-    UserProfileException("Business profile update is already in progress for userId $userId. A new request is not allowed.")
+    UserProfileException(
+        reason = "duplicate",
+        message = "Business profile update is already in progress for userId $userId. A new request is not allowed."
+    )
 
-class InvalidBusinessProfileChangeRequestException(userId: String, reason: String? = null) :
-    UserProfileException("Change request for business profile is invalid for userId $userId. Reason: $reason")
+class InvalidBusinessProfileChangeRequestException(userId: String, invalidFields: String? = null) :
+    UserProfileException(
+        reason = "invalidParameter",
+        message = "Change request for business profile is invalid for userId $userId. Invalid Fields: $invalidFields"
+    )
 
-class BusinessProfileChangeRequestNotExist(requestId: String) :
-    UserProfileException("Change request for business profile doesn't exist for requestId: $requestId")
+class BusinessProfileChangeRequestNotFoundException(userId: String, requestId: String?) :
+    UserProfileException(
+        reason = "notFound",
+        message = "Business profile change request not found with userId: $userId and requestId: $requestId"
+    )

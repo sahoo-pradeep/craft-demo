@@ -15,6 +15,7 @@ import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
 import demo.craft.user.profile.domain.enums.ChangeRequestOperation
 import demo.craft.user.profile.domain.mapper.toChangeRequest
 import demo.craft.user.profile.domain.mapper.toKafkaPayload
+import demo.craft.user.profile.mapper.toKeyValueString
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 
@@ -40,7 +41,7 @@ class BusinessProfileService(
     fun createBusinessProfile(businessProfile: BusinessProfile): BusinessProfileChangeRequest {
         val invalidFields = businessProfile.validateFields()
         if (invalidFields.isNotEmpty()) {
-            throw InvalidBusinessProfileException(businessProfile.userId, "TODO")
+            throw InvalidBusinessProfileException(businessProfile.userId, invalidFields.toKeyValueString())
         }
 
         businessProfileAccess.findByUserId(businessProfile.userId)?.let {
@@ -67,7 +68,7 @@ class BusinessProfileService(
     fun updateBusinessProfile(businessProfile: BusinessProfile): BusinessProfileChangeRequest {
         val invalidFields = businessProfile.validateFields()
         if (invalidFields.isNotEmpty()) {
-            throw InvalidBusinessProfileException(businessProfile.userId, "")
+            throw InvalidBusinessProfileException(businessProfile.userId, invalidFields.toKeyValueString())
         }
 
         // ensures that business profile is already created

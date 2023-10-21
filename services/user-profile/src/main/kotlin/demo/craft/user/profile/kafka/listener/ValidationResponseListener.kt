@@ -64,12 +64,12 @@ class ValidationResponseListener(
         val changeRequestProductStatuses = changeRequestProductStatusRepository.findByRequestId(validationResponse.requestId)
 
         if (changeRequestProductStatuses.any { it.status == ChangeRequestStatus.REJECTED }) {
-            businessProfileChangeRequestAccess.updateStatus(validationResponse.requestId, ChangeRequestStatus.REJECTED)
+            businessProfileChangeRequestAccess.updateStatus(validationResponse.userId, validationResponse.requestId, ChangeRequestStatus.REJECTED)
             return
         }
 
         if (changeRequestProductStatuses.all { it.status == ChangeRequestStatus.ACCEPTED }) {
-            businessProfileChangeRequestAccess.updateStatus(validationResponse.requestId, ChangeRequestStatus.ACCEPTED)
+            businessProfileChangeRequestAccess.updateStatus(validationResponse.userId, validationResponse.requestId, ChangeRequestStatus.ACCEPTED)
             businessProfileAccess.updateBusinessProfile(changeRequest)
             return
         }

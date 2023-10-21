@@ -14,7 +14,7 @@ internal class ChangeRequestFailureReasonRdsImpl(
     private val changeRequestFailureReasonRepository: ChangeRequestFailureReasonRepository
 ) : ChangeRequestFailureReasonAccess {
     private val log = KotlinLogging.logger {}
-    override fun findByRequestId(requestId: String): List<ChangeRequestFailureReason> =
+    override fun findAllByRequestId(requestId: String): List<ChangeRequestFailureReason> =
         changeRequestFailureReasonRepository.findByRequestId(requestId)
 
     override fun saveAllFailureReason(

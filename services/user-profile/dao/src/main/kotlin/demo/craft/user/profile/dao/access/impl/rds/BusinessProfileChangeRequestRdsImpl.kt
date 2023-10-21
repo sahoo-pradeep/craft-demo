@@ -1,6 +1,6 @@
 package demo.craft.user.profile.dao.access.impl.rds
 
-import demo.craft.user.profile.common.exception.BusinessProfileChangeRequestNotExist
+import demo.craft.user.profile.common.exception.BusinessProfileChangeRequestNotFoundException
 import demo.craft.user.profile.common.exception.BusinessProfileUpdateAlreadyInProgressException
 import demo.craft.user.profile.dao.access.BusinessProfileChangeRequestAccess
 import demo.craft.user.profile.dao.repository.AddressRepository
@@ -24,6 +24,9 @@ internal class BusinessProfileChangeRequestRdsImpl(
     override fun findByRequestId(requestId: String): BusinessProfileChangeRequest? =
         businessProfileChangeRequestRepository.findByRequestId(requestId)
 
+    override fun findTopChangeRequest(userId: String): BusinessProfileChangeRequest? =
+        businessProfileChangeRequestRepository.findTopByUserIdOrderByCreatedAtDesc(userId)
+
     @Transactional
     override fun createChangeRequest(
         businessProfileChangeRequest: BusinessProfileChangeRequest
@@ -43,8 +46,8 @@ internal class BusinessProfileChangeRequestRdsImpl(
         )
     }
 
-    override fun updateStatus(requestId: String, updatedStatus: ChangeRequestStatus): BusinessProfileChangeRequest {
-        val changeRequest = findByRequestId(requestId) ?: throw BusinessProfileChangeRequestNotExist(requestId)
+    override fun updateStatus(userId: String, requestId: String, updatedStatus: ChangeRequestStatus): BusinessProfileChangeRequest {
+        val changeRequest = findByRequestId(requestId) ?: throw BusinessProfileChangeRequestNotFoundException(userId, requestId)
         if (changeRequest.status.isTerminal()) {
             throw IllegalArgumentException("State update for change request with requestId $requestId is not allowed as current status is in terminal state")
         }

@@ -3,7 +3,6 @@ package demo.craft.user.profile.domain.entity
 import demo.craft.user.profile.domain.enums.AddressFieldName
 import demo.craft.user.profile.domain.enums.FieldName
 import demo.craft.user.profile.domain.model.AddressType
-import demo.craft.user.profile.domain.model.InvalidField
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
@@ -29,18 +28,18 @@ data class Address(
     @UpdateTimestamp
     val updatedAt: LocalDateTime? = null,
 ) {
-    fun validateFields(addressType: AddressType): List<InvalidField> {
-        val invalidFields = mutableListOf<InvalidField>()
+    fun validateFields(addressType: AddressType): List<Pair<FieldName, String>> {
+        val invalidFields = mutableListOf<Pair<FieldName, String>>()
 
         if (line1.isEmpty()) {
             invalidFields.add(
-                InvalidField(getFieldName(addressType, AddressFieldName.LINE_1), "line1 should not be empty")
+                Pair(getFieldName(addressType, AddressFieldName.LINE_1), "line1 should not be empty")
             )
         }
 
         if (city.isEmpty()) {
             invalidFields.add(
-                InvalidField(
+                Pair(
                     getFieldName(addressType, AddressFieldName.CITY), "city should not be empty"
                 )
             )
@@ -48,7 +47,7 @@ data class Address(
 
         if (state.isEmpty()) {
             invalidFields.add(
-                InvalidField(
+                Pair(
                     getFieldName(addressType, AddressFieldName.STATE), "state should not be empty"
                 )
             )
@@ -56,7 +55,7 @@ data class Address(
 
         if (zip.isEmpty()) {
             invalidFields.add(
-                InvalidField(
+                Pair(
                     getFieldName(addressType, AddressFieldName.ZIP), "zip should not be empty"
                 )
             )
@@ -64,7 +63,7 @@ data class Address(
 
         if (country.isEmpty()) {
             invalidFields.add(
-                InvalidField(
+                Pair(
                     getFieldName(addressType, AddressFieldName.COUNTRY), "country should not be empty"
                 )
             )

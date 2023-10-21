@@ -6,7 +6,7 @@ import demo.craft.user.profile.domain.enums.FieldName
 
 interface ChangeRequestFailureReasonAccess {
     /** Get change request failure reasons by [requestId] */
-    fun findByRequestId(requestId: String): List<ChangeRequestFailureReason>
+    fun findAllByRequestId(requestId: String): List<ChangeRequestFailureReason>
 
     fun saveAllFailureReason(
         requestId: String,

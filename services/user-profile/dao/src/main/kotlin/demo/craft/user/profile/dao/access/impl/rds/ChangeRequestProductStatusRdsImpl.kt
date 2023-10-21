@@ -1,7 +1,6 @@
 package demo.craft.user.profile.dao.access.impl.rds
 
 import demo.craft.common.domain.enums.Product
-import demo.craft.user.profile.common.exception.BusinessProfileChangeRequestNotExist
 import demo.craft.user.profile.dao.access.ChangeRequestProductStatusAccess
 import demo.craft.user.profile.dao.repository.ChangeRequestProductStatusRepository
 import demo.craft.user.profile.domain.entity.ChangeRequestProductStatus

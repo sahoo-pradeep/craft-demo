@@ -16,40 +16,27 @@ class RestResponseEntityExceptionHandler(
 ) : ResponseEntityExceptionHandler() {
     private val log = KotlinLogging.logger {}
 
-    val exceptionMapping: Map<KClass<out java.lang.RuntimeException>, ApiErrorResponse> = mapOf(
-        BusinessProfileNotFoundException::class to ApiErrorResponse(
-            status = HttpStatus.NOT_FOUND,
-            body = ErrorMessage("NOT_FOUND", "Business profile could not be found")
-        ),
+    companion object {
+        val DefaultErrorBody = ErrorBody("internalError", "The request failed due to an internal error")
+    }
 
-        BusinessProfileAlreadyExistsException::class to ApiErrorResponse(
-            status = HttpStatus.CONFLICT,
-            body = ErrorMessage("DUPLICATE", "Business profile is already exists")
-        ),
-
-        InvalidBusinessProfileException::class to ApiErrorResponse(
-            status = HttpStatus.CONFLICT,
-            body = ErrorMessage("INVALID", "The request has invalid value")
-        ),
-
-        BusinessProfileUpdateAlreadyInProgressException::class to ApiErrorResponse(
-            status = HttpStatus.CONFLICT,
-            body = ErrorMessage("DUPLICATE", "Business profile update request is already in progress")
-        ),
+    val exceptionToHttpStatusMapping: Map<KClass<out java.lang.RuntimeException>, HttpStatus> = mapOf(
+        BusinessProfileNotFoundException::class to HttpStatus.NOT_FOUND,
+        BusinessProfileAlreadyExistsException::class to HttpStatus.CONFLICT,
+        InvalidBusinessProfileException::class to HttpStatus.CONFLICT,
+        BusinessProfileUpdateAlreadyInProgressException::class to HttpStatus.CONFLICT,
+        UnauthorizedUserException::class to HttpStatus.UNAUTHORIZED
     )
 
     @ExceptionHandler
     protected fun handleException(e: RuntimeException, request: WebRequest): ResponseEntity<Any?>? {
-        val apiErrorResponse = exceptionMapping[e::class]?.let {
-            when (e) {
-                is UserProfileException -> it.copy(body = it.body.copy(additionalInfo = e.additionalInfo))
-                else -> it
-            }
-        }
-            ?: ApiErrorResponse(
-                status = HttpStatus.INTERNAL_SERVER_ERROR,
-                body = ErrorMessage("INTERNAL_SERVER_ERROR", "Request failed due to an internal server error")
+        val apiErrorResponse = when (e) {
+            is UserProfileException -> ApiErrorResponse(
+                status = exceptionToHttpStatusMapping[e::class] ?: HttpStatus.INTERNAL_SERVER_ERROR,
+                body = e.toErrorBody()
             )
+            else -> ApiErrorResponse()
+        }
 
         if (apiErrorResponse.status == HttpStatus.INTERNAL_SERVER_ERROR) {
             // print stack trace in case of internal server error
@@ -62,13 +49,18 @@ class RestResponseEntityExceptionHandler(
     }
 
     data class ApiErrorResponse(
-        val status: HttpStatus,
-        val body: ErrorMessage,
+        val status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+        val body: ErrorBody = DefaultErrorBody
     )
 
-    data class ErrorMessage(
-        val errorCode: String? = null,
-        val errorMessage: String? = null,
-        val additionalInfo: Any? = null
+    data class ErrorBody(
+        val reason: String,
+        val message: String
     )
+
+    private fun UserProfileException.toErrorBody() =
+        ErrorBody(
+            reason = this.reason,
+            message = this.message
+        )
 }

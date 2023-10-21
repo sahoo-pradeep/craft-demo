@@ -1,10 +1,13 @@
 openapi: 3.0.0
+
 info:
   title: User Profile
   description: Open API spec for User Profile
   version: 0.0.1
+
 servers:
   - url: "http://localhost:8080"
+
 paths:
   /user-profile/v1/business-profile:
     get:
@@ -21,6 +24,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetBusinessProfileResponse"
+
     post:
       tags:
         - business-profile
@@ -41,7 +45,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CreateBusinessProfileResponse"
-    patch:
+
+    put:
       tags:
         - business-profile
       operationId: updateBusinessProfile
@@ -61,6 +66,40 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UpdateBusinessProfileResponse"
+
+  /user-profile/v1/business-profile/change-request/status:
+    get:
+      tags:
+        - business-profile-change-request
+      operationId: getBusinessProfileChangeRequestStatus
+      summary: Get business profile change request status
+      parameters:
+        - $ref: "#/components/parameters/userId"
+        - $ref: "#/components/parameters/requestId"
+      responses:
+        "200":
+          description: Business profile change request status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetBusinessProfileChangeRequestStatusResponse"
+
+  /user-profile/v1/business-profile/change-request/latest-status:
+    get:
+      tags:
+        - business-profile-change-request
+      operationId: getBusinessProfileChangeRequestLatestStatus
+      summary: Get business profile change request status
+      parameters:
+        - $ref: "#/components/parameters/userId"
+      responses:
+        "200":
+          description: Business profile change request latest status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetBusinessProfileChangeRequestLatestStatusResponse"
+
 components:
   parameters:
     userId:
@@ -69,6 +108,14 @@ components:
       required: true
       schema:
         type: string
+
+    requestId:
+      in: query
+      name: requestId
+      required: true
+      schema:
+        type: string
+
   schemas:
     BusinessProfile:
       type: object
@@ -83,26 +130,21 @@ components:
       properties:
         companyName:
           type: string
-          example: Acme
         legalName:
           type: string
-          example: Acme Corp
         pan:
           type: string
-          example: XXXCX9999X
         ein:
           type: string
-          example: 99-9999999
         email:
           type: string
-          example: demo@acme.com
         website:
           type: string
-          example: acme.com
         businessAddress:
           $ref: '#/components/schemas/Address'
         legalAddress:
           $ref: '#/components/schemas/Address'
+
     Address:
       type: object
       required:
@@ -114,28 +156,55 @@ components:
       properties:
         line1:
           type: string
-          example: House 101
         line2:
           type: string
-          example: 1st Cross
         line3:
           type: string
-          example: Rajiv Street
         city:
           type: string
-          example: Bengaluru
         state:
           type: string
-          example: Karnataka
         zip:
           type: string
-          example: 560001
         country:
           type: string
-          example: India
+
     ChangeRequestStatus:
       type: string
       enum: [ IN_PROGRESS, ACCEPTED, REJECTED ]
+
+    ChangeRequestOperation:
+      type: string
+      enum: [ CREATE, UPDATE ]
+
+    Product:
+      type: string
+      enum: [ QUICKBOOKS_ACCOUNTING, QUICKBOOKS_PAYROLL, QUICKBOOKS_PAYMENTS, TSHEETS ]
+
+    BusinessProfileFieldName:
+      type: string
+      enum:
+        - COMPANY_NAME
+        - LEGAL_NAME
+        - PAN
+        - EIN
+        - EMAIL
+        - WEBSITE
+        - BUSINESS_ADDRESS_LINE_1
+        - BUSINESS_ADDRESS_LINE_2
+        - BUSINESS_ADDRESS_LINE_3
+        - BUSINESS_ADDRESS_CITY
+        - BUSINESS_ADDRESS_STATE
+        - BUSINESS_ADDRESS_ZIP
+        - BUSINESS_ADDRESS_COUNTRY
+        - LEGAL_ADDRESS_LINE_1
+        - LEGAL_ADDRESS_LINE_2
+        - LEGAL_ADDRESS_LINE_3
+        - LEGAL_ADDRESS_CITY
+        - LEGAL_ADDRESS_STATE
+        - LEGAL_ADDRESS_ZIP
+        - LEGAL_ADDRESS_COUNTRY
+
     GetBusinessProfileResponse:
       type: object
       required:
@@ -143,6 +212,7 @@ components:
       properties:
         businessProfile:
           $ref: "#/components/schemas/BusinessProfile"
+
     CreateBusinessProfileRequest:
       type: object
       required:
@@ -150,6 +220,7 @@ components:
       properties:
         businessProfile:
           $ref: "#/components/schemas/BusinessProfile"
+
     CreateBusinessProfileResponse:
       type: object
       required:
@@ -157,7 +228,7 @@ components:
       properties:
         requestUuid:
           type: string
-          example: af39e021-0acd-4451-8677-14ad95693b1b
+
     UpdateBusinessProfileRequest:
       type: object
       required:
@@ -165,6 +236,7 @@ components:
       properties:
         businessProfile:
           $ref: "#/components/schemas/BusinessProfile"
+
     UpdateBusinessProfileResponse:
       type: object
       required:
@@ -172,4 +244,65 @@ components:
       properties:
         requestUuid:
           type: string
-          example: af39e021-0acd-4451-8677-14ad95693b1b
+
+    GetBusinessProfileChangeRequestStatusResponse:
+      type: object
+      required:
+        - changeRequestStatus
+      properties:
+        changeRequestStatus:
+          $ref: "#/components/schemas/BusinessProfileChangeRequestStatus"
+
+    GetBusinessProfileChangeRequestLatestStatusResponse:
+      type: object
+      required:
+        - changeRequestStatus
+      properties:
+        changeRequestStatus:
+          $ref: "#/components/schemas/BusinessProfileChangeRequestStatus"
+
+    BusinessProfileChangeRequestStatus:
+      type: object
+      required:
+        - requestId
+        - operation
+        - status
+        - productStatus
+      properties:
+        requestId:
+          type: string
+        operation:
+          $ref: "#/components/schemas/ChangeRequestOperation"
+        status:
+          $ref: '#/components/schemas/ChangeRequestStatus'
+        productStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChangeRequestProductStatus'
+
+    ChangeRequestProductStatus:
+      type: object
+      required:
+        - product
+        - status
+        - failureReasons
+      properties:
+        product:
+          $ref: '#/components/schemas/Product'
+        status:
+          $ref: '#/components/schemas/ChangeRequestStatus'
+        failureReasons:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductFailureReason"
+
+    ProductFailureReason:
+      type: object
+      required:
+        - field
+        - reason
+      properties:
+        field:
+          $ref: '#/components/schemas/BusinessProfileFieldName'
+        reason:
+          type: string
