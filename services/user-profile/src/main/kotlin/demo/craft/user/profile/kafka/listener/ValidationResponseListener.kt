@@ -10,6 +10,7 @@ import demo.craft.user.profile.dao.access.ChangeRequestFailureReasonAccess
 import demo.craft.user.profile.dao.access.ChangeRequestProductStatusAccess
 import demo.craft.user.profile.domain.enums.ChangeRequestStatus
 import demo.craft.user.profile.domain.kafka.BusinessProfileValidationResponse
+import demo.craft.user.profile.lock.UserProfileLockManager
 import mu.KotlinLogging
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
@@ -20,6 +21,7 @@ class ValidationResponseListener(
     private val businessProfileChangeRequestAccess: BusinessProfileChangeRequestAccess,
     private val changeRequestProductStatusRepository: ChangeRequestProductStatusAccess,
     private val changeRequestFailureReasonAccess: ChangeRequestFailureReasonAccess,
+    private val lockManager: UserProfileLockManager,
     private val userProfileProperties: UserProfileProperties
 ) {
     private val log = KotlinLogging.logger {}
@@ -43,35 +45,37 @@ class ValidationResponseListener(
             }
         } ?: log.error { "Investigate! Change request product status not found. payload: $kafkaMessage" }.run { return }
 
-        changeRequestProductStatusRepository
-            .updateStatus(validationResponse.requestId, validationResponse.product, validationResponse.status)
+        lockManager.doExclusively(validationResponse.userId) {
+            changeRequestProductStatusRepository
+                .updateStatus(validationResponse.requestId, validationResponse.product, validationResponse.status)
 
-        if (validationResponse.status == ChangeRequestStatus.REJECTED && validationResponse.failureReasons.isNotEmpty()) {
-            changeRequestFailureReasonAccess.saveAllFailureReason(
-                validationResponse.requestId,
-                validationResponse.product,
-                validationResponse.failureReasons
-            )
-        }
+            if (validationResponse.status == ChangeRequestStatus.REJECTED && validationResponse.failureReasons.isNotEmpty()) {
+                changeRequestFailureReasonAccess.saveAllFailureReason(
+                    validationResponse.requestId,
+                    validationResponse.product,
+                    validationResponse.failureReasons
+                )
+            }
 
-        val changeRequest = businessProfileChangeRequestAccess.findByRequestId(validationResponse.requestId)!!
+            val changeRequest = businessProfileChangeRequestAccess.findByRequestId(validationResponse.requestId)!!
 
-        if (changeRequest.status == ChangeRequestStatus.REJECTED) {
-            // no need to update change request status
-            return
-        }
+            if (!changeRequest.status.isTerminal()) {
+                // no need to update change request status
+                return@doExclusively
+            }
 
-        val changeRequestProductStatuses = changeRequestProductStatusRepository.findByRequestId(validationResponse.requestId)
+            val changeRequestProductStatuses = changeRequestProductStatusRepository.findByRequestId(validationResponse.requestId)
 
-        if (changeRequestProductStatuses.any { it.status == ChangeRequestStatus.REJECTED }) {
-            businessProfileChangeRequestAccess.updateStatus(validationResponse.userId, validationResponse.requestId, ChangeRequestStatus.REJECTED)
-            return
-        }
+            if (changeRequestProductStatuses.any { it.status == ChangeRequestStatus.REJECTED }) {
+                businessProfileChangeRequestAccess.updateStatus(validationResponse.userId, validationResponse.requestId, ChangeRequestStatus.REJECTED)
+                return@doExclusively
+            }
 
-        if (changeRequestProductStatuses.all { it.status == ChangeRequestStatus.ACCEPTED }) {
-            businessProfileChangeRequestAccess.updateStatus(validationResponse.userId, validationResponse.requestId, ChangeRequestStatus.ACCEPTED)
-            businessProfileAccess.updateBusinessProfile(changeRequest)
-            return
+            if (changeRequestProductStatuses.all { it.status == ChangeRequestStatus.ACCEPTED }) {
+                businessProfileChangeRequestAccess.updateStatus(validationResponse.userId, validationResponse.requestId, ChangeRequestStatus.ACCEPTED)
+                businessProfileAccess.updateBusinessProfile(changeRequest)
+                return@doExclusively
+            }
         }
     }
 }

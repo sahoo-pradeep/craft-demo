@@ -11,8 +11,8 @@ dependencies {
 
 
     // integrations clients
-    implementation("demo.craft:product-subscription-client:0.0.3-SNAPSHOT")
-    implementation("demo.craft:common-domain:0.0.3-SNAPSHOT")
+    implementation("demo.craft:product-subscription-client:0.0.4-SNAPSHOT")
+    implementation("demo.craft:common-domain:0.0.4-SNAPSHOT")
 
     // external dependencies
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

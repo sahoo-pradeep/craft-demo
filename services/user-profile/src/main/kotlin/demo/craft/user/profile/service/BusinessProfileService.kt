@@ -15,6 +15,7 @@ import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
 import demo.craft.user.profile.domain.enums.ChangeRequestOperation
 import demo.craft.user.profile.domain.mapper.toChangeRequest
 import demo.craft.user.profile.domain.mapper.toKafkaPayload
+import demo.craft.user.profile.lock.UserProfileLockManager
 import demo.craft.user.profile.mapper.toKeyValueString
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
@@ -24,6 +25,7 @@ class BusinessProfileService(
     private val businessProfileAccess: BusinessProfileAccess,
     private val businessProfileChangeRequestAccess: BusinessProfileChangeRequestAccess,
     private val kafkaPublisher: KafkaPublisher,
+    private val lockManager: UserProfileLockManager,
     userProfileProperties: UserProfileProperties,
 ) {
     private val log = KotlinLogging.logger {}
@@ -36,7 +38,6 @@ class BusinessProfileService(
     fun getBusinessProfile(userId: String): BusinessProfile =
         businessProfileAccess.findByUserId(userId) ?: throw BusinessProfileNotFoundException(userId)
 
-    // TODO: customer lock
     // TODO: logging context
     fun createBusinessProfile(businessProfile: BusinessProfile): BusinessProfileChangeRequest {
         val invalidFields = businessProfile.validateFields()
@@ -48,21 +49,23 @@ class BusinessProfileService(
             throw BusinessProfileAlreadyExistsException(businessProfile.userId)
         }
 
-        val changeRequest =
-            businessProfileChangeRequestAccess.createChangeRequest(
-                businessProfile.toChangeRequest(
-                    ChangeRequestOperation.CREATE
+        return lockManager.doExclusively(businessProfile.userId) {
+            val changeRequest =
+                businessProfileChangeRequestAccess.createChangeRequest(
+                    businessProfile.toChangeRequest(
+                        ChangeRequestOperation.CREATE
+                    )
                 )
+            log.info { "Request to create business profile is created successfully with requestUuid: ${changeRequest.requestId} " }
+
+            kafkaPublisher.publish(
+                kafkaProperties.businessProfileChangeRequestTopic,
+                businessProfile.userId.hashCode(),
+                objectMapper.writeValueAsString(changeRequest.toKafkaPayload())
             )
-        log.info { "Request to create business profile is created successfully with requestUuid: ${changeRequest.requestId} " }
 
-        kafkaPublisher.publish(
-            kafkaProperties.businessProfileChangeRequestTopic,
-            businessProfile.userId.hashCode(),
-            objectMapper.writeValueAsString(changeRequest.toKafkaPayload())
-        )
-
-        return changeRequest
+            changeRequest
+        }
     }
 
     fun updateBusinessProfile(businessProfile: BusinessProfile): BusinessProfileChangeRequest {
@@ -74,20 +77,22 @@ class BusinessProfileService(
         // ensures that business profile is already created
         getBusinessProfile(businessProfile.userId)
 
-        val changeRequest =
-            businessProfileChangeRequestAccess.createChangeRequest(
-                businessProfile.toChangeRequest(
-                    ChangeRequestOperation.UPDATE
+        return lockManager.doExclusively(businessProfile.userId) {
+            val changeRequest =
+                businessProfileChangeRequestAccess.createChangeRequest(
+                    businessProfile.toChangeRequest(
+                        ChangeRequestOperation.UPDATE
+                    )
                 )
+            log.info { "Request to update business profile is created successfully with requestUuid: ${changeRequest.requestId} " }
+
+            kafkaPublisher.publish(
+                kafkaProperties.businessProfileChangeRequestTopic,
+                businessProfile.userId.hashCode(),
+                objectMapper.writeValueAsString(changeRequest.toKafkaPayload())
             )
-        log.info { "Request to update business profile is created successfully with requestUuid: ${changeRequest.requestId} " }
 
-        kafkaPublisher.publish(
-            kafkaProperties.businessProfileChangeRequestTopic,
-            businessProfile.userId.hashCode(),
-            objectMapper.writeValueAsString(changeRequest.toKafkaPayload())
-        )
-
-        return changeRequest
+            changeRequest
+        }
     }
 }

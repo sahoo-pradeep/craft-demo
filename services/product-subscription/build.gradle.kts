@@ -13,8 +13,8 @@ dependencies {
     implementation(project(":services:product-subscription:domain"))
 
     // internal libs
-    implementation("demo.craft:common-communication:0.0.3-SNAPSHOT")
-    implementation("demo.craft:common-domain:0.0.3-SNAPSHOT")
+    implementation("demo.craft:common-communication:0.0.4-SNAPSHOT")
+    implementation("demo.craft:common-domain:0.0.4-SNAPSHOT")
 
     // external libs
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

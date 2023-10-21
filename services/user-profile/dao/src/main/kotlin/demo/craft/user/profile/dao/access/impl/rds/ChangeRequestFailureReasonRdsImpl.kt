@@ -2,7 +2,6 @@ package demo.craft.user.profile.dao.access.impl.rds
 
 import demo.craft.common.domain.enums.Product
 import demo.craft.user.profile.dao.access.ChangeRequestFailureReasonAccess
-import demo.craft.user.profile.dao.repository.BusinessProfileRepository
 import demo.craft.user.profile.dao.repository.ChangeRequestFailureReasonRepository
 import demo.craft.user.profile.domain.entity.ChangeRequestFailureReason
 import demo.craft.user.profile.domain.enums.FieldName

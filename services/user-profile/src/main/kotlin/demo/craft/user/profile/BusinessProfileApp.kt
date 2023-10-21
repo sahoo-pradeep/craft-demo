@@ -1,6 +1,7 @@
 package demo.craft.user.profile
 
 import demo.craft.common.communication.config.CommunicationProperties
+import demo.craft.common.lock.config.LockManagerProperties
 import demo.craft.user.profile.common.config.UserProfileProperties
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -12,13 +13,15 @@ import java.util.*
 @SpringBootApplication(
     scanBasePackages = [
         "demo.craft.user.profile",
-        "demo.craft.common.communication" // for kafka publisher
+        "demo.craft.common.communication", // for kafka publisher
+        "demo.craft.common.lock" // for lock manager
     ]
 )
 @ConfigurationPropertiesScan(
     basePackageClasses = [
         UserProfileProperties::class,
-        CommunicationProperties::class
+        CommunicationProperties::class,
+        LockManagerProperties::class,
     ]
 )
 @EnableJpaRepositories

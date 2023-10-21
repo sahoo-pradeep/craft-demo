@@ -14,6 +14,7 @@ import demo.craft.user.profile.domain.kafka.BusinessProfileChangeRequestKafkaPay
 import demo.craft.user.profile.domain.kafka.BusinessProfileValidationRequest
 import demo.craft.user.profile.integration.ProductSubscriptionIntegration
 import demo.craft.user.profile.integration.mapper.toChangeRequestProductStatuses
+import demo.craft.user.profile.lock.UserProfileLockManager
 import mu.KotlinLogging
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
@@ -25,6 +26,7 @@ class ChangeRequestListener(
     private val changeRequestProductStatusRepository: ChangeRequestProductStatusAccess,
     private val productSubscriptionIntegration: ProductSubscriptionIntegration,
     private val kafkaPublisher: KafkaPublisher,
+    private val lockManager: UserProfileLockManager,
     userProfileProperties: UserProfileProperties,
 ) {
     private val log = KotlinLogging.logger {}
@@ -37,37 +39,40 @@ class ChangeRequestListener(
     @KafkaListener(
         topics = ["\${demo.craft.user-profile.kafka.businessProfileChangeRequestTopic}"]
     )
-    fun onMessage(kafkaMessage: String) {
+    fun onMessage(message: String) {
         val topicName = kafkaProperties.businessProfileChangeRequestTopic
-        log.info { "Received kafka message. Topic: $topicName. Message: $kafkaMessage" }
-        val message = objectMapper.readValue(kafkaMessage, BusinessProfileChangeRequestKafkaPayload::class.java)
+        log.info { "Received kafka message. Topic: $topicName. Message: $message" }
+        val changeRequestKafkaPayload = objectMapper.readValue(message, BusinessProfileChangeRequestKafkaPayload::class.java)
 
-        if (changeRequestProductStatusRepository.existsByRequestId(message.requestId)) {
+        if (changeRequestProductStatusRepository.existsByRequestId(changeRequestKafkaPayload.requestId)) {
             log.error {
                 "Change request is already published to subscribed products. " +
-                    "Ignoring publishing change request: $kafkaMessage"
+                    "Ignoring publishing change request: $changeRequestKafkaPayload"
             }
             return
         }
 
-        val changeRequest = businessProfileChangeRequestAccess.findByRequestId(message.requestId)
-            ?: throw IllegalArgumentException("requestId in kafka message $message is invalid")
+        lockManager.doExclusively(changeRequestKafkaPayload.userId) {
+            val changeRequest = businessProfileChangeRequestAccess.findByRequestId(changeRequestKafkaPayload.requestId)
+                ?: throw IllegalArgumentException("requestId in kafka message $changeRequestKafkaPayload is invalid")
 
-        val currentProfile = businessProfileAccess.findByUserId(message.userId)
+            val currentProfile = businessProfileAccess.findByUserId(changeRequestKafkaPayload.userId)
 
-        val activeProductSubscriptions = productSubscriptionIntegration.getProductSubscriptions(message.userId)
-            .filter { it.status == ProductSubscriptionStatus.ACTIVE }
+            val activeProductSubscriptions = productSubscriptionIntegration.getProductSubscriptions(changeRequestKafkaPayload.userId)
+                .filter { it.status == ProductSubscriptionStatus.ACTIVE }
 
-        if (activeProductSubscriptions.isEmpty()) {
-            log.error { "Investigate! Change request received for a user ${message.userId} with no active product subscriptions" }
-            return
+            if (activeProductSubscriptions.isEmpty()) {
+                log.error { "Investigate! Change request received for a user ${changeRequestKafkaPayload.userId} with no active product subscriptions" }
+                return@doExclusively
+            }
+
+            changeRequestProductStatusRepository.createNewEntries(
+                activeProductSubscriptions.toChangeRequestProductStatuses(changeRequestKafkaPayload.requestId, ChangeRequestStatus.IN_PROGRESS)
+            )
+
+            val kafkaPayload = objectMapper.writeValueAsString(BusinessProfileValidationRequest(currentProfile, changeRequest))
+            kafkaPublisher.publish(kafkaProperties.businessProfileValidationRequestTopic, changeRequestKafkaPayload.userId.hashCode(), kafkaPayload)
+
         }
-
-        changeRequestProductStatusRepository.createNewEntries(
-            activeProductSubscriptions.toChangeRequestProductStatuses(message.requestId, ChangeRequestStatus.IN_PROGRESS)
-        )
-
-        val kafkaPayload = objectMapper.writeValueAsString(BusinessProfileValidationRequest(currentProfile, changeRequest))
-        kafkaPublisher.publish(kafkaProperties.businessProfileValidationRequestTopic, message.userId.hashCode(), kafkaPayload)
     }
 }

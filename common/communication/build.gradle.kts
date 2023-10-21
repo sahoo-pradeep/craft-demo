@@ -12,7 +12,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2")
     implementation("io.github.microutils:kotlin-logging:1.7.9") // logging
     implementation(kotlin("stdlib-jdk8"))
-	implementation("org.springframework.kafka:spring-kafka") // kafka
+    implementation("org.springframework.kafka:spring-kafka") // kafka
     implementation("io.micrometer:micrometer-registry-prometheus") // metrics and tracing
 
     testImplementation("org.assertj:assertj-core:3.24.2")

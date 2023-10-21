@@ -35,6 +35,7 @@ class RestResponseEntityExceptionHandler(
                 status = exceptionToHttpStatusMapping[e::class] ?: HttpStatus.INTERNAL_SERVER_ERROR,
                 body = e.toErrorBody()
             )
+
             else -> ApiErrorResponse()
         }
 

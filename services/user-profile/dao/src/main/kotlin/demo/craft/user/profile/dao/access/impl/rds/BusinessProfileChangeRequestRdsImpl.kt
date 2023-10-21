@@ -47,7 +47,8 @@ internal class BusinessProfileChangeRequestRdsImpl(
     }
 
     override fun updateStatus(userId: String, requestId: String, updatedStatus: ChangeRequestStatus): BusinessProfileChangeRequest {
-        val changeRequest = findByRequestId(requestId) ?: throw BusinessProfileChangeRequestNotFoundException(userId, requestId)
+        val changeRequest = findByRequestId(requestId)
+            ?: throw BusinessProfileChangeRequestNotFoundException(userId, requestId)
         if (changeRequest.status.isTerminal()) {
             throw IllegalArgumentException("State update for change request with requestId $requestId is not allowed as current status is in terminal state")
         }

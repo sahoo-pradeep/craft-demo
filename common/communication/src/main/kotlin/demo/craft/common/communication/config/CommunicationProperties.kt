@@ -1,7 +1,7 @@
 package demo.craft.common.communication.config
 
-import java.time.Duration
 import org.springframework.boot.context.properties.ConfigurationProperties
+import java.time.Duration
 
 @ConfigurationProperties("demo.craft.communication")
 class CommunicationProperties {
