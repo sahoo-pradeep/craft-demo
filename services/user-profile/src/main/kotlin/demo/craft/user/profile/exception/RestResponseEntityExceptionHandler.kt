@@ -1,5 +1,6 @@
 package demo.craft.user.profile.exception
 
+import demo.craft.user.profile.common.config.LoggingContext
 import demo.craft.user.profile.common.exception.*
 import mu.KotlinLogging
 import org.springframework.http.HttpHeaders
@@ -39,11 +40,14 @@ class RestResponseEntityExceptionHandler(
             else -> ApiErrorResponse()
         }
 
-        if (apiErrorResponse.status == HttpStatus.INTERNAL_SERVER_ERROR) {
-            // print stack trace in case of internal server error
-            log.error(e) { "Internal server error: ${e.message}" }
-        } else {
-            log.error { e.message }
+        val userId = request.getHeader("x-user-id") ?: ""
+        LoggingContext.forUser(userId) {
+            if (apiErrorResponse.status == HttpStatus.INTERNAL_SERVER_ERROR) {
+                // print stack trace in case of internal server error
+                log.error(e) { "Internal server error: ${e.message}" }
+            } else {
+                log.error { e.message }
+            }
         }
 
         return handleExceptionInternal(e, apiErrorResponse.body, HttpHeaders(), apiErrorResponse.status, request)

@@ -38,7 +38,6 @@ class BusinessProfileService(
     fun getBusinessProfile(userId: String): BusinessProfile =
         businessProfileAccess.findByUserId(userId) ?: throw BusinessProfileNotFoundException(userId)
 
-    // TODO: logging context
     fun createBusinessProfile(businessProfile: BusinessProfile): BusinessProfileChangeRequest {
         val invalidFields = businessProfile.validateFields()
         if (invalidFields.isNotEmpty()) {
