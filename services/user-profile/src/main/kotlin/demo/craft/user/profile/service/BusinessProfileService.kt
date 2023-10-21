@@ -13,8 +13,8 @@ import demo.craft.user.profile.dao.access.BusinessProfileChangeRequestAccess
 import demo.craft.user.profile.domain.entity.BusinessProfile
 import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
 import demo.craft.user.profile.domain.enums.ChangeRequestOperation
-import demo.craft.user.profile.mapper.toChangeRequest
-import demo.craft.user.profile.mapper.toKafkaPayload
+import demo.craft.user.profile.domain.mapper.toChangeRequest
+import demo.craft.user.profile.domain.mapper.toKafkaPayload
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 

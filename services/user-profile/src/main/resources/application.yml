@@ -7,6 +7,7 @@ demo:
           groupId: 'user-profile'
     user-profile:
       kafka:
+        businessProfileChangeRequestTopic: 'business-profile-change-request'
         businessProfileValidationRequestTopic: 'business-profile-validation-request'
         businessProfileValidationResponseTopic: 'business-profile-validation-response'
       integration:

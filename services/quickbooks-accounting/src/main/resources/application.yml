@@ -4,6 +4,11 @@ demo:
       kafka:
         businessProfileValidationRequestTopic: "business-profile-validation-request"
         businessProfileValidationResponseTopic: "business-profile-validation-response"
+    communication:
+      kafka:
+        bootstrapServers: 'localhost:9092'
+        consumer:
+          groupId: 'quickbooks-accounting'
 
 spring:
   application:

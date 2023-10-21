@@ -13,7 +13,7 @@ import demo.craft.user.profile.domain.enums.ChangeRequestStatus
 import demo.craft.user.profile.domain.kafka.BusinessProfileChangeRequestKafkaPayload
 import demo.craft.user.profile.domain.kafka.BusinessProfileValidationRequest
 import demo.craft.user.profile.integration.ProductSubscriptionIntegration
-import demo.craft.user.profile.mapper.toChangeRequestProductStatuses
+import demo.craft.user.profile.integration.mapper.toChangeRequestProductStatuses
 import mu.KotlinLogging
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Component
@@ -35,8 +35,7 @@ class ChangeRequestListener(
     private val kafkaProperties = userProfileProperties.kafka
 
     @KafkaListener(
-        id = "ChangeRequestListener",
-        topics = ["\${demo.craft.user-profile.businessProfile.kafka.changeRequestTopicName}"]
+        topics = ["\${demo.craft.user-profile.kafka.businessProfileChangeRequestTopic}"]
     )
     fun onMessage(kafkaMessage: String) {
         val topicName = kafkaProperties.businessProfileChangeRequestTopic
@@ -69,6 +68,6 @@ class ChangeRequestListener(
         )
 
         val kafkaPayload = objectMapper.writeValueAsString(BusinessProfileValidationRequest(currentProfile, changeRequest))
-        kafkaPublisher.publish(kafkaProperties.businessProfileChangeRequestTopic, message.userId.hashCode(), kafkaPayload)
+        kafkaPublisher.publish(kafkaProperties.businessProfileValidationRequestTopic, message.userId.hashCode(), kafkaPayload)
     }
 }

@@ -1,5 +1,6 @@
 package demo.craft.user.profile.dao.access.impl.rds
 
+import demo.craft.user.profile.common.exception.BusinessProfileChangeRequestNotExist
 import demo.craft.user.profile.common.exception.BusinessProfileUpdateAlreadyInProgressException
 import demo.craft.user.profile.dao.access.BusinessProfileChangeRequestAccess
 import demo.craft.user.profile.dao.repository.AddressRepository
@@ -40,5 +41,14 @@ internal class BusinessProfileChangeRequestRdsImpl(
                 legalAddress = persistedLegalAddress
             )
         )
+    }
+
+    override fun updateStatus(requestId: String, updatedStatus: ChangeRequestStatus): BusinessProfileChangeRequest {
+        val changeRequest = findByRequestId(requestId) ?: throw BusinessProfileChangeRequestNotExist(requestId)
+        if (changeRequest.status.isTerminal()) {
+            throw IllegalArgumentException("State update for change request with requestId $requestId is not allowed as current status is in terminal state")
+        }
+
+        return businessProfileChangeRequestRepository.save(changeRequest.copy(status = updatedStatus))
     }
 }

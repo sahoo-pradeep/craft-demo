@@ -7,9 +7,12 @@ plugins {
 dependencies {
     // internal modules
     implementation(project(":services:user-profile:common"))
+    implementation(project(":services:user-profile:domain"))
+
 
     // integrations clients
     implementation("demo.craft:product-subscription-client:0.0.3-SNAPSHOT")
+    implementation("demo.craft:common-domain:0.0.3-SNAPSHOT")
 
     // external dependencies
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

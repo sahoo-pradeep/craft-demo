@@ -29,8 +29,7 @@ class ValidationResponseListener(
     }
 
     @KafkaListener(
-        id = "ValidationResponseListener",
-        topics = ["\${demo.craft.user-profile.businessProfile.kafka.changeRequestProductTopicName}"]
+        topics = ["\${demo.craft.user-profile.kafka.businessProfileValidationResponseTopic}"]
     )
     fun onMessage(kafkaMessage: String) {
         val topicName = userProfileProperties.kafka.businessProfileValidationResponseTopic

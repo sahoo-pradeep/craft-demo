@@ -5,3 +5,6 @@ class BusinessProfileUpdateAlreadyInProgressException(userId: String) :
 
 class InvalidBusinessProfileChangeRequestException(userId: String, reason: String? = null) :
     UserProfileException("Change request for business profile is invalid for userId $userId. Reason: $reason")
+
+class BusinessProfileChangeRequestNotExist(requestId: String) :
+    UserProfileException("Change request for business profile doesn't exist for requestId: $requestId")

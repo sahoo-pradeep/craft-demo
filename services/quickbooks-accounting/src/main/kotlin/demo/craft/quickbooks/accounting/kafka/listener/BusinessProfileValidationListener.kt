@@ -28,7 +28,6 @@ class BusinessProfileValidationListener(
     private val kafkaProperties = properties.kafka
 
     @KafkaListener(
-        id = "BusinessProfileValidationListener",
         topics = ["\${demo.craft.quickbooks-accounting.kafka.businessProfileValidationRequestTopic}"]
     )
     fun onMessage(kafkaMessage: String) {
@@ -68,9 +67,12 @@ class BusinessProfileValidationListener(
             }
         }
 
-        when {
-            !isZipServiceable(request.profileChangeRequest.legalAddress.zip) -> failureReasons.add(Pair(FieldName.LEGAL_ADDRESS_ZIP, "Zip is not serviceable"))
-            !isZipServiceable(request.profileChangeRequest.businessAddress.zip) -> failureReasons.add(Pair(FieldName.BUSINESS_ADDRESS_ZIP, "Zip is not serviceable"))
+        if (!isZipServiceable(request.profileChangeRequest.legalAddress.zip)) {
+            failureReasons.add(Pair(FieldName.LEGAL_ADDRESS_ZIP, "Zip is not serviceable"))
+        }
+
+        if (!isZipServiceable(request.profileChangeRequest.businessAddress.zip)) {
+            failureReasons.add(Pair(FieldName.BUSINESS_ADDRESS_ZIP, "Zip is not serviceable"))
         }
 
         return failureReasons
