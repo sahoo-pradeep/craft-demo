@@ -49,24 +49,7 @@ class BusinessProfileService(
             throw BusinessProfileAlreadyExistsException(businessProfile.userId)
         }
 
-        return lockManager.doExclusively(businessProfile.userId) {
-            val changeRequest =
-                businessProfileChangeRequestAccess.createChangeRequest(
-                    businessProfile.toChangeRequest(
-                        UUID.randomUUID().toString(),
-                        ChangeRequestOperation.CREATE
-                    )
-                )
-            log.info { "Request to create business profile is created successfully with requestUuid: ${changeRequest.requestId} " }
-
-            kafkaPublisher.publish(
-                kafkaProperties.businessProfileChangeRequestTopic,
-                businessProfile.userId.hashCode(),
-                objectMapper.writeValueAsString(changeRequest.toKafkaPayload())
-            )
-
-            changeRequest
-        }
+        return createAndPublishChangeRequest(businessProfile, ChangeRequestOperation.CREATE)
     }
 
     fun updateBusinessProfile(businessProfile: BusinessProfile): BusinessProfileChangeRequest {
@@ -78,23 +61,31 @@ class BusinessProfileService(
         // ensures that business profile is already created
         getBusinessProfile(businessProfile.userId)
 
-        return lockManager.doExclusively(businessProfile.userId) {
+        return createAndPublishChangeRequest(businessProfile, ChangeRequestOperation.UPDATE)
+    }
+
+    private fun createAndPublishChangeRequest(
+        businessProfile: BusinessProfile,
+        operation: ChangeRequestOperation
+    ): BusinessProfileChangeRequest =
+        lockManager.doExclusively(businessProfile.userId) {
             val changeRequest =
                 businessProfileChangeRequestAccess.createChangeRequest(
-                    businessProfile.toChangeRequest(
-                        UUID.randomUUID().toString(),
-                        ChangeRequestOperation.UPDATE
-                    )
+                    businessProfile.toChangeRequest(UUID.randomUUID().toString(), operation)
                 )
             log.info { "Request to update business profile is created successfully with requestUuid: ${changeRequest.requestId} " }
 
-            kafkaPublisher.publish(
-                kafkaProperties.businessProfileChangeRequestTopic,
-                businessProfile.userId.hashCode(),
-                objectMapper.writeValueAsString(changeRequest.toKafkaPayload())
-            )
-
+            try {
+                kafkaPublisher.publish(
+                    kafkaProperties.businessProfileChangeRequestTopic,
+                    businessProfile.userId.hashCode(),
+                    objectMapper.writeValueAsString(changeRequest.toKafkaPayload())
+                )
+            } catch (e: Exception) {
+                log.error { "Failed to publish change request in kafka. payload: ${changeRequest.toKafkaPayload()}" }
+                // exception is not thrown intentionally for better user experience. once kafka downtime is fixed,
+                // these requests should be retried.
+            }
             changeRequest
         }
-    }
 }
