@@ -1,4 +1,4 @@
-package demo.craft.user.profile.service
+package demo.craft.user.profile
 
 import demo.craft.common.lock.LockManager
 import java.time.Duration

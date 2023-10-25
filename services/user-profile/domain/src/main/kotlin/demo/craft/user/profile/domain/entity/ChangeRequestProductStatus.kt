@@ -2,10 +2,10 @@ package demo.craft.user.profile.domain.entity
 
 import demo.craft.common.domain.enums.Product
 import demo.craft.user.profile.domain.enums.ChangeRequestStatus
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
 import javax.persistence.*
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
 
 @Entity
 data class ChangeRequestProductStatus(

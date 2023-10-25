@@ -1,4 +1,4 @@
-package demo.craft.user.profile.service
+package demo.craft.user.profile
 
 import demo.craft.common.domain.enums.Product
 import demo.craft.user.profile.domain.entity.Address
@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter
 object TestConstant {
     const val REQUEST_ID_1 = "00000000-0000-0000-0000-000000000001"
     const val USER_1 = "USER001"
+    const val USER_2 = "USER002"
     const val COMPANY_NAME_1 = "COMPANY 1"
     const val LEGAL_NAME_1 = "COMPANY LEGAL 1"
     const val PAN_1 = "AAACA1111A"
@@ -25,6 +26,7 @@ object TestConstant {
     const val EIN_FAILURE_REASON = "invalid ein"
     val DATE_TIME_1 = LocalDateTime.parse("2023-10-20T00:00:00", DateTimeFormatter.ISO_DATE_TIME)
     val PRODUCT_1 = Product.QUICKBOOKS_ACCOUNTING
+    val PRODUCT_2 = Product.QUICKBOOKS_PAYROLL
 
     val ADDRESS_1 = Address(
         id = 1,
@@ -100,6 +102,15 @@ object TestConstant {
         updatedAt = DATE_TIME_1
     )
 
+    val CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_2 = ChangeRequestProductStatus(
+        id = 1,
+        requestId = REQUEST_ID_1,
+        product = PRODUCT_2,
+        status = ChangeRequestStatus.REJECTED,
+        createdAt = DATE_TIME_1,
+        updatedAt = DATE_TIME_1
+    )
+
     val CHANGE_REQUEST_FAILURE_REASON_1 = ChangeRequestFailureReason(
         id = 1,
         requestId = REQUEST_ID_1,
@@ -112,7 +123,7 @@ object TestConstant {
     val CHANGE_REQUEST_FAILURE_REASON_2 = ChangeRequestFailureReason(
         id = 1,
         requestId = REQUEST_ID_1,
-        product = PRODUCT_1,
+        product = PRODUCT_2,
         field = FieldName.EIN,
         reason = EIN_FAILURE_REASON,
         createdAt = DATE_TIME_1

@@ -2,9 +2,9 @@ package demo.craft.user.profile.domain.entity
 
 import demo.craft.common.domain.enums.Product
 import demo.craft.user.profile.domain.enums.FieldName
-import org.hibernate.annotations.CreationTimestamp
 import java.time.LocalDateTime
 import javax.persistence.*
+import org.hibernate.annotations.CreationTimestamp
 
 @Entity
 data class ChangeRequestFailureReason(

@@ -3,8 +3,8 @@ package demo.craft.user.profile.lock
 import demo.craft.common.lock.LockManager
 import demo.craft.user.profile.common.config.LoggingContext
 import demo.craft.user.profile.common.config.UserProfileProperties
-import org.springframework.stereotype.Component
 import javax.transaction.Transactional
+import org.springframework.stereotype.Component
 
 @Component
 class UserProfileLockManager(

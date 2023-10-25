@@ -8,9 +8,9 @@ import demo.craft.user.profile.domain.entity.Address
 import demo.craft.user.profile.domain.entity.BusinessProfile
 import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
 import demo.craft.user.profile.domain.mapper.toBusinessProfile
+import javax.transaction.Transactional
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
-import javax.transaction.Transactional
 
 @Component
 internal class BusinessProfileRdsImpl(

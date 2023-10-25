@@ -5,9 +5,9 @@ import demo.craft.user.profile.dao.access.ChangeRequestProductStatusAccess
 import demo.craft.user.profile.dao.repository.ChangeRequestProductStatusRepository
 import demo.craft.user.profile.domain.entity.ChangeRequestProductStatus
 import demo.craft.user.profile.domain.enums.ChangeRequestStatus
+import javax.transaction.Transactional
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
-import javax.transaction.Transactional
 
 @Component
 internal class ChangeRequestProductStatusRdsImpl(

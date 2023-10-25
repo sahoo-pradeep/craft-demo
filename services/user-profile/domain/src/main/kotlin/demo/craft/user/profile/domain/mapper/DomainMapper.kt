@@ -5,7 +5,6 @@ import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
 import demo.craft.user.profile.domain.enums.ChangeRequestOperation
 import demo.craft.user.profile.domain.enums.ChangeRequestStatus
 import demo.craft.user.profile.domain.kafka.BusinessProfileChangeRequestKafkaPayload
-import java.util.*
 
 fun BusinessProfile.toChangeRequest(requestId: String, operation: ChangeRequestOperation): BusinessProfileChangeRequest =
     BusinessProfileChangeRequest(

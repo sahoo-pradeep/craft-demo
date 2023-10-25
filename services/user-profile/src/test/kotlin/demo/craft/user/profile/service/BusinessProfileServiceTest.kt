@@ -1,21 +1,20 @@
 package demo.craft.user.profile.service
 
 import demo.craft.common.communication.kafka.KafkaPublisher
+import demo.craft.user.profile.TestConstant
+import demo.craft.user.profile.TestLockManager
 import demo.craft.user.profile.common.config.UserProfileProperties
 import demo.craft.user.profile.common.exception.BusinessProfileAlreadyExistsException
 import demo.craft.user.profile.common.exception.BusinessProfileNotFoundException
 import demo.craft.user.profile.common.exception.InvalidBusinessProfileException
 import demo.craft.user.profile.dao.access.BusinessProfileAccess
 import demo.craft.user.profile.dao.access.BusinessProfileChangeRequestAccess
-import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
 import demo.craft.user.profile.lock.UserProfileLockManager
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.SpyK
-import io.mockk.mockk
 import io.mockk.verify
-import java.util.concurrent.TimeoutException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

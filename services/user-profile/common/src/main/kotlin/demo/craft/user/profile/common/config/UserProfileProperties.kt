@@ -1,7 +1,7 @@
 package demo.craft.user.profile.common.config
 
-import org.springframework.boot.context.properties.ConfigurationProperties
 import java.time.Duration
+import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties("demo.craft.user-profile")
 class UserProfileProperties {
