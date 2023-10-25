@@ -6,6 +6,7 @@ import demo.craft.user.profile.common.exception.UnauthorizedUserException
 import demo.craft.user.profile.dao.access.BusinessProfileChangeRequestAccess
 import demo.craft.user.profile.dao.access.ChangeRequestFailureReasonAccess
 import demo.craft.user.profile.dao.access.ChangeRequestProductStatusAccess
+import demo.craft.user.profile.domain.enums.ChangeRequestStatus
 import demo.craft.user.profile.domain.model.BusinessProfileChangeRequestWrapper
 import demo.craft.user.profile.domain.model.ChangeRequestProductStatusWrapper
 import io.mockk.every
@@ -36,29 +37,29 @@ class BusinessProfileChangeRequestTestService {
     fun `get business profile change request happy case`() {
         //given
         every {
-            businessProfileChangeRequestAccess.findByRequestId(TestConstant.REQUEST_ID_1)
-        } returns TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
+            businessProfileChangeRequestAccess.findByRequestId(TestConstant.REQUEST_ID_2)
+        } returns TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_2
 
         every {
-            changeRequestProductStatusAccess.findAllByRequestId(TestConstant.REQUEST_ID_1)
+            changeRequestProductStatusAccess.findAllByRequestId(TestConstant.REQUEST_ID_2)
         } returns listOf(
             TestConstant.CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_1,
             TestConstant.CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_2
         )
 
         every {
-            changeRequestFailureReasonAccess.findAllByRequestId(TestConstant.REQUEST_ID_1)
+            changeRequestFailureReasonAccess.findAllByRequestId(TestConstant.REQUEST_ID_2)
         } returns listOf(
             TestConstant.CHANGE_REQUEST_FAILURE_REASON_1,
             TestConstant.CHANGE_REQUEST_FAILURE_REASON_2
         )
 
         //when
-        val changeRequest = businessProfileChangeRequestService.getBusinessProfileChangeRequest(TestConstant.USER_1, TestConstant.REQUEST_ID_1)
+        val changeRequestWrapper = businessProfileChangeRequestService.getBusinessProfileChangeRequest(TestConstant.USER_1, TestConstant.REQUEST_ID_2)
 
         //then
         val expectedResponse = BusinessProfileChangeRequestWrapper(
-            changeRequest = TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1,
+            changeRequest = TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_2,
             productStatuses = listOf(
                 ChangeRequestProductStatusWrapper(
                     productStatus = TestConstant.CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_1,
@@ -75,11 +76,14 @@ class BusinessProfileChangeRequestTestService {
             )
         )
 
-        Assertions.assertEquals(expectedResponse, changeRequest)
+        Assertions.assertEquals(expectedResponse, changeRequestWrapper)
+        if (changeRequestWrapper.productStatuses.any { it.productStatus.status == ChangeRequestStatus.REJECTED }) {
+            Assertions.assertEquals(ChangeRequestStatus.REJECTED, changeRequestWrapper.changeRequest.status)
+        }
 
-        verify(exactly = 1) { businessProfileChangeRequestAccess.findByRequestId(TestConstant.REQUEST_ID_1) }
-        verify(exactly = 1) { changeRequestProductStatusAccess.findAllByRequestId(TestConstant.REQUEST_ID_1) }
-        verify(exactly = 1) { changeRequestFailureReasonAccess.findAllByRequestId(TestConstant.REQUEST_ID_1) }
+        verify(exactly = 1) { businessProfileChangeRequestAccess.findByRequestId(TestConstant.REQUEST_ID_2) }
+        verify(exactly = 1) { changeRequestProductStatusAccess.findAllByRequestId(TestConstant.REQUEST_ID_2) }
+        verify(exactly = 1) { changeRequestFailureReasonAccess.findAllByRequestId(TestConstant.REQUEST_ID_2) }
     }
 
     @Test

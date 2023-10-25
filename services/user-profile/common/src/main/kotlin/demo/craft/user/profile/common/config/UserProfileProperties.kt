@@ -10,9 +10,9 @@ class UserProfileProperties {
     val lock = LockProperties()
 
     class KafkaProperties {
-        var businessProfileChangeRequestTopic: String = ""
-        var businessProfileValidationRequestTopic: String = ""
-        var businessProfileValidationResponseTopic: String = ""
+        var businessProfileChangeRequestTopic: String = "business-profile-change-request"
+        var businessProfileValidationRequestTopic: String = "business-profile-validation-request"
+        var businessProfileValidationResponseTopic: String = "business-profile-validation-response"
     }
 
     class IntegrationProperties {

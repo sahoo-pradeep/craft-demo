@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component
 class ChangeRequestListener(
     private val businessProfileAccess: BusinessProfileAccess,
     private val businessProfileChangeRequestAccess: BusinessProfileChangeRequestAccess,
-    private val changeRequestProductStatusRepository: ChangeRequestProductStatusAccess,
+    private val changeRequestProductStatusAccess: ChangeRequestProductStatusAccess,
     private val productSubscriptionIntegration: ProductSubscriptionIntegration,
     private val kafkaPublisher: KafkaPublisher,
     private val lockManager: UserProfileLockManager,
@@ -44,7 +44,7 @@ class ChangeRequestListener(
         log.info { "Received kafka message. Topic: $topicName. Message: $message" }
         val changeRequestKafkaPayload = objectMapper.readValue(message, BusinessProfileChangeRequestKafkaPayload::class.java)
 
-        if (changeRequestProductStatusRepository.existsByRequestId(changeRequestKafkaPayload.requestId)) {
+        if (changeRequestProductStatusAccess.existsByRequestId(changeRequestKafkaPayload.requestId)) {
             log.error {
                 "Change request is already published to subscribed products. " +
                     "Ignoring publishing change request: $changeRequestKafkaPayload"
@@ -66,13 +66,12 @@ class ChangeRequestListener(
                 return@doExclusively
             }
 
-            changeRequestProductStatusRepository.createNewEntries(
+            changeRequestProductStatusAccess.createNewEntries(
                 activeProductSubscriptions.toChangeRequestProductStatuses(changeRequestKafkaPayload.requestId, ChangeRequestStatus.IN_PROGRESS)
             )
 
             val kafkaPayload = objectMapper.writeValueAsString(BusinessProfileValidationRequest(currentProfile, changeRequest))
             kafkaPublisher.publish(kafkaProperties.businessProfileValidationRequestTopic, changeRequestKafkaPayload.userId.hashCode(), kafkaPayload)
-
         }
     }
 }

@@ -1,6 +1,8 @@
 package demo.craft.user.profile
 
 import demo.craft.common.domain.enums.Product
+import demo.craft.product.subscription.client.model.ProductSubscription
+import demo.craft.product.subscription.client.model.ProductSubscriptionStatus
 import demo.craft.user.profile.domain.entity.Address
 import demo.craft.user.profile.domain.entity.BusinessProfile
 import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
@@ -9,11 +11,13 @@ import demo.craft.user.profile.domain.entity.ChangeRequestProductStatus
 import demo.craft.user.profile.domain.enums.ChangeRequestOperation
 import demo.craft.user.profile.domain.enums.ChangeRequestStatus
 import demo.craft.user.profile.domain.enums.FieldName
+import demo.craft.user.profile.domain.kafka.BusinessProfileChangeRequestKafkaPayload
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 object TestConstant {
     const val REQUEST_ID_1 = "00000000-0000-0000-0000-000000000001"
+    const val REQUEST_ID_2 = "00000000-0000-0000-0000-000000000002"
     const val USER_1 = "USER001"
     const val USER_2 = "USER002"
     const val COMPANY_NAME_1 = "COMPANY 1"
@@ -77,7 +81,7 @@ object TestConstant {
 
     val BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_2 = BusinessProfileChangeRequest(
         id = 1,
-        requestId = REQUEST_ID_1,
+        requestId = REQUEST_ID_2,
         userId = USER_1,
         operation = ChangeRequestOperation.CREATE,
         status = ChangeRequestStatus.REJECTED,
@@ -93,9 +97,27 @@ object TestConstant {
         updatedAt = DATE_TIME_1
     )
 
-    val CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_1 = ChangeRequestProductStatus(
+    val CHANGE_REQUEST_PRODUCT_STATUS_IN_PROGRESS_1 = ChangeRequestProductStatus(
         id = 1,
         requestId = REQUEST_ID_1,
+        product = PRODUCT_1,
+        status = ChangeRequestStatus.IN_PROGRESS,
+        createdAt = DATE_TIME_1,
+        updatedAt = DATE_TIME_1
+    )
+
+    val CHANGE_REQUEST_PRODUCT_STATUS_IN_PROGRESS_2 = ChangeRequestProductStatus(
+        id = 1,
+        requestId = REQUEST_ID_2,
+        product = PRODUCT_2,
+        status = ChangeRequestStatus.IN_PROGRESS,
+        createdAt = DATE_TIME_1,
+        updatedAt = DATE_TIME_1
+    )
+
+    val CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_1 = ChangeRequestProductStatus(
+        id = 1,
+        requestId = REQUEST_ID_2,
         product = PRODUCT_1,
         status = ChangeRequestStatus.REJECTED,
         createdAt = DATE_TIME_1,
@@ -104,7 +126,7 @@ object TestConstant {
 
     val CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_2 = ChangeRequestProductStatus(
         id = 1,
-        requestId = REQUEST_ID_1,
+        requestId = REQUEST_ID_2,
         product = PRODUCT_2,
         status = ChangeRequestStatus.REJECTED,
         createdAt = DATE_TIME_1,
@@ -113,7 +135,7 @@ object TestConstant {
 
     val CHANGE_REQUEST_FAILURE_REASON_1 = ChangeRequestFailureReason(
         id = 1,
-        requestId = REQUEST_ID_1,
+        requestId = REQUEST_ID_2,
         product = PRODUCT_1,
         field = FieldName.PAN,
         reason = PAN_FAILURE_REASON,
@@ -122,10 +144,26 @@ object TestConstant {
 
     val CHANGE_REQUEST_FAILURE_REASON_2 = ChangeRequestFailureReason(
         id = 1,
-        requestId = REQUEST_ID_1,
+        requestId = REQUEST_ID_2,
         product = PRODUCT_2,
         field = FieldName.EIN,
         reason = EIN_FAILURE_REASON,
+        createdAt = DATE_TIME_1
+    )
+
+    val PRODUCT_SUBSCRIPTION_1 =
+        ProductSubscription()
+            .product(demo.craft.product.subscription.client.model.Product.QUICKBOOKS_ACCOUNTING)
+            .status(demo.craft.product.subscription.client.model.ProductSubscriptionStatus.ACTIVE)
+
+    val PRODUCT_SUBSCRIPTION_2 =
+        ProductSubscription()
+            .product(demo.craft.product.subscription.client.model.Product.QUICKBOOKS_PAYROLL)
+            .status(demo.craft.product.subscription.client.model.ProductSubscriptionStatus.ACTIVE)
+
+    val BUSINESS_PROFILE_CHANGE_REQUEST_KAFKA_PAYLOAD_1 = BusinessProfileChangeRequestKafkaPayload(
+        userId = USER_1,
+        requestId = REQUEST_ID_1,
         createdAt = DATE_TIME_1
     )
 }
