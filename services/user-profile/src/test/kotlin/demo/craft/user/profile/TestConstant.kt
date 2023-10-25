@@ -2,7 +2,6 @@ package demo.craft.user.profile
 
 import demo.craft.common.domain.enums.Product
 import demo.craft.product.subscription.client.model.ProductSubscription
-import demo.craft.product.subscription.client.model.ProductSubscriptionStatus
 import demo.craft.user.profile.domain.entity.Address
 import demo.craft.user.profile.domain.entity.BusinessProfile
 import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest

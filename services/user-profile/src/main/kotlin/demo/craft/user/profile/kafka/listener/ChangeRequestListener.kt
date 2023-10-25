@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import demo.craft.common.communication.kafka.KafkaPublisher
 import demo.craft.product.subscription.client.model.ProductSubscriptionStatus
 import demo.craft.user.profile.common.config.UserProfileProperties
+import demo.craft.user.profile.common.exception.BusinessProfileChangeRequestNotFoundException
 import demo.craft.user.profile.dao.access.BusinessProfileAccess
 import demo.craft.user.profile.dao.access.BusinessProfileChangeRequestAccess
 import demo.craft.user.profile.dao.access.ChangeRequestProductStatusAccess
@@ -54,7 +55,7 @@ class ChangeRequestListener(
 
         lockManager.doExclusively(changeRequestKafkaPayload.userId) {
             val changeRequest = businessProfileChangeRequestAccess.findByRequestId(changeRequestKafkaPayload.requestId)
-                ?: throw IllegalArgumentException("requestId in kafka message $changeRequestKafkaPayload is invalid")
+                ?: throw BusinessProfileChangeRequestNotFoundException(changeRequestKafkaPayload.userId, changeRequestKafkaPayload.requestId)
 
             val currentProfile = businessProfileAccess.findByUserId(changeRequestKafkaPayload.userId)
 
@@ -63,6 +64,7 @@ class ChangeRequestListener(
 
             if (activeProductSubscriptions.isEmpty()) {
                 log.error { "Investigate! Change request received for a user ${changeRequestKafkaPayload.userId} with no active product subscriptions" }
+                businessProfileChangeRequestAccess.updateStatus(changeRequestKafkaPayload.userId, changeRequestKafkaPayload.requestId, ChangeRequestStatus.FAILED)
                 return@doExclusively
             }
 

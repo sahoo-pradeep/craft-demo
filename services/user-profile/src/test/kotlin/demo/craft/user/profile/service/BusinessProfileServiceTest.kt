@@ -1,7 +1,9 @@
 package demo.craft.user.profile.service
 
 import demo.craft.common.communication.kafka.KafkaPublisher
-import demo.craft.user.profile.TestConstant
+import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_1
+import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
+import demo.craft.user.profile.TestConstant.USER_1
 import demo.craft.user.profile.TestLockManager
 import demo.craft.user.profile.common.config.UserProfileProperties
 import demo.craft.user.profile.common.exception.BusinessProfileAlreadyExistsException
@@ -45,44 +47,44 @@ class BusinessProfileServiceTest {
     @Test
     fun `get business profile happy case`() {
         //given
-        every { businessProfileAccess.findByUserId(TestConstant.USER_1) } returns TestConstant.BUSINESS_PROFILE_1
+        every { businessProfileAccess.findByUserId(USER_1) } returns BUSINESS_PROFILE_1
 
         //when
-        val businessProfile = businessProfileService.getBusinessProfile(TestConstant.USER_1)
+        val businessProfile = businessProfileService.getBusinessProfile(USER_1)
 
         //then
-        assertEquals(businessProfile, TestConstant.BUSINESS_PROFILE_1)
+        assertEquals(businessProfile, BUSINESS_PROFILE_1)
 
-        verify(exactly = 1) { businessProfileAccess.findByUserId(TestConstant.USER_1) }
+        verify(exactly = 1) { businessProfileAccess.findByUserId(USER_1) }
     }
 
     @Test
     fun `get business profile when it doesn't exist`() {
         //given
-        every { businessProfileAccess.findByUserId(TestConstant.USER_1) } returns null
+        every { businessProfileAccess.findByUserId(USER_1) } returns null
 
         //when
-        val exception = assertThrows<Exception> { businessProfileService.getBusinessProfile(TestConstant.USER_1) }
+        val exception = assertThrows<Exception> { businessProfileService.getBusinessProfile(USER_1) }
 
         //then
         assertEquals(BusinessProfileNotFoundException::class, exception::class)
-        verify(exactly = 1) { businessProfileAccess.findByUserId(TestConstant.USER_1) }
+        verify(exactly = 1) { businessProfileAccess.findByUserId(USER_1) }
     }
 
     @Test
     fun `create business profile happy case`() {
         //given
-        every { businessProfileAccess.findByUserId(TestConstant.USER_1) } returns null
+        every { businessProfileAccess.findByUserId(USER_1) } returns null
         every { kafkaPublisher.publish(any(), any(), any()) } returns Unit
-        every { businessProfileChangeRequestAccess.createChangeRequest(any()) } returns TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
+        every { businessProfileChangeRequestAccess.createChangeRequest(any()) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
 
         // when
-        val changeRequest = businessProfileService.createBusinessProfile(TestConstant.BUSINESS_PROFILE_1)
+        val changeRequest = businessProfileService.createBusinessProfile(BUSINESS_PROFILE_1)
 
         // then
-        assertEquals(TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1, changeRequest)
+        assertEquals(BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1, changeRequest)
 
-        verify(exactly = 1) { businessProfileAccess.findByUserId(TestConstant.USER_1) }
+        verify(exactly = 1) { businessProfileAccess.findByUserId(USER_1) }
         verify(exactly = 1) { businessProfileChangeRequestAccess.createChangeRequest(any()) }
         verify(exactly = 1) { kafkaPublisher.publish(any(), any(), any()) }
     }
@@ -90,7 +92,7 @@ class BusinessProfileServiceTest {
     @Test
     fun `create business profile with invalid request`() {
         //given
-        val invalidRequest = TestConstant.BUSINESS_PROFILE_1.copy(
+        val invalidRequest = BUSINESS_PROFILE_1.copy(
             companyName = "",
             pan = "1234567890"
         )
@@ -100,7 +102,7 @@ class BusinessProfileServiceTest {
         // then
         assertEquals(InvalidBusinessProfileException::class, exception::class)
 
-        verify(exactly = 0) { businessProfileAccess.findByUserId(TestConstant.USER_1) }
+        verify(exactly = 0) { businessProfileAccess.findByUserId(USER_1) }
         verify(exactly = 0) { businessProfileChangeRequestAccess.createChangeRequest(any()) }
         verify(exactly = 0) { kafkaPublisher.publish(any(), any(), any()) }
     }
@@ -108,15 +110,15 @@ class BusinessProfileServiceTest {
     @Test
     fun `create business profile when it already exists`() {
         //given
-        every { businessProfileAccess.findByUserId(TestConstant.USER_1) } returns TestConstant.BUSINESS_PROFILE_1
+        every { businessProfileAccess.findByUserId(USER_1) } returns BUSINESS_PROFILE_1
 
         // when
-        val exception = assertThrows<Exception> { businessProfileService.createBusinessProfile(TestConstant.BUSINESS_PROFILE_1) }
+        val exception = assertThrows<Exception> { businessProfileService.createBusinessProfile(BUSINESS_PROFILE_1) }
 
         // then
         assertEquals(BusinessProfileAlreadyExistsException::class, exception::class)
 
-        verify(exactly = 1) { businessProfileAccess.findByUserId(TestConstant.USER_1) }
+        verify(exactly = 1) { businessProfileAccess.findByUserId(USER_1) }
         verify(exactly = 0) { businessProfileChangeRequestAccess.createChangeRequest(any()) }
         verify(exactly = 0) { kafkaPublisher.publish(any(), any(), any()) }
     }
@@ -124,17 +126,17 @@ class BusinessProfileServiceTest {
     @Test
     fun `create business profile when kafka publish fails`() {
         //given
-        every { businessProfileAccess.findByUserId(TestConstant.USER_1) } returns null
+        every { businessProfileAccess.findByUserId(USER_1) } returns null
         every { kafkaPublisher.publish(any(), any(), any()) } throws RuntimeException()
-        every { businessProfileChangeRequestAccess.createChangeRequest(any()) } returns TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
+        every { businessProfileChangeRequestAccess.createChangeRequest(any()) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
 
         // when
-        val changeRequest = businessProfileService.createBusinessProfile(TestConstant.BUSINESS_PROFILE_1)
+        val changeRequest = businessProfileService.createBusinessProfile(BUSINESS_PROFILE_1)
 
         // then
-        assertEquals(TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1, changeRequest)
+        assertEquals(BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1, changeRequest)
 
-        verify(exactly = 1) { businessProfileAccess.findByUserId(TestConstant.USER_1) }
+        verify(exactly = 1) { businessProfileAccess.findByUserId(USER_1) }
         verify(exactly = 1) { businessProfileChangeRequestAccess.createChangeRequest(any()) }
         verify(exactly = 1) { kafkaPublisher.publish(any(), any(), any()) }
     }
@@ -142,17 +144,17 @@ class BusinessProfileServiceTest {
     @Test
     fun `update business profile happy case`() {
         //given
-        every { businessProfileAccess.findByUserId(TestConstant.USER_1) } returns TestConstant.BUSINESS_PROFILE_1
+        every { businessProfileAccess.findByUserId(USER_1) } returns BUSINESS_PROFILE_1
         every { kafkaPublisher.publish(any(), any(), any()) } returns Unit
-        every { businessProfileChangeRequestAccess.createChangeRequest(any()) } returns TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
+        every { businessProfileChangeRequestAccess.createChangeRequest(any()) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
 
         // when
-        val changeRequest = businessProfileService.updateBusinessProfile(TestConstant.BUSINESS_PROFILE_1)
+        val changeRequest = businessProfileService.updateBusinessProfile(BUSINESS_PROFILE_1)
 
         // then
-        assertEquals(TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1, changeRequest)
+        assertEquals(BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1, changeRequest)
 
-        verify(exactly = 1) { businessProfileAccess.findByUserId(TestConstant.USER_1) }
+        verify(exactly = 1) { businessProfileAccess.findByUserId(USER_1) }
         verify(exactly = 1) { businessProfileChangeRequestAccess.createChangeRequest(any()) }
         verify(exactly = 1) { kafkaPublisher.publish(any(), any(), any()) }
     }
@@ -160,7 +162,7 @@ class BusinessProfileServiceTest {
     @Test
     fun `update business profile with invalid request`() {
         //given
-        val invalidRequest = TestConstant.BUSINESS_PROFILE_1.copy(
+        val invalidRequest = BUSINESS_PROFILE_1.copy(
             companyName = "",
             pan = "1234567890"
         )
@@ -170,7 +172,7 @@ class BusinessProfileServiceTest {
         // then
         assertEquals(InvalidBusinessProfileException::class, exception::class)
 
-        verify(exactly = 0) { businessProfileAccess.findByUserId(TestConstant.USER_1) }
+        verify(exactly = 0) { businessProfileAccess.findByUserId(USER_1) }
         verify(exactly = 0) { businessProfileChangeRequestAccess.createChangeRequest(any()) }
         verify(exactly = 0) { kafkaPublisher.publish(any(), any(), any()) }
     }
@@ -178,15 +180,15 @@ class BusinessProfileServiceTest {
     @Test
     fun `update business profile when business profile doesn't exist`() {
         //given
-        every { businessProfileAccess.findByUserId(TestConstant.USER_1) } returns null
+        every { businessProfileAccess.findByUserId(USER_1) } returns null
 
         // when
-        val exception = assertThrows<Exception> { businessProfileService.updateBusinessProfile(TestConstant.BUSINESS_PROFILE_1) }
+        val exception = assertThrows<Exception> { businessProfileService.updateBusinessProfile(BUSINESS_PROFILE_1) }
 
         // then
         assertEquals(BusinessProfileNotFoundException::class, exception::class)
 
-        verify(exactly = 1) { businessProfileAccess.findByUserId(TestConstant.USER_1) }
+        verify(exactly = 1) { businessProfileAccess.findByUserId(USER_1) }
         verify(exactly = 0) { businessProfileChangeRequestAccess.createChangeRequest(any()) }
         verify(exactly = 0) { kafkaPublisher.publish(any(), any(), any()) }
     }
