@@ -5,21 +5,21 @@ import java.time.Duration
 
 @ConfigurationProperties("demo.craft.user-profile")
 class UserProfileProperties {
-    val kafka = Kafka()
+    val kafka = KafkaProperties()
     val integration = IntegrationProperties()
     val lock = LockProperties()
 
-    class Kafka {
-        lateinit var businessProfileChangeRequestTopic: String
-        lateinit var businessProfileValidationRequestTopic: String
-        lateinit var businessProfileValidationResponseTopic: String
+    class KafkaProperties {
+        var businessProfileChangeRequestTopic: String = ""
+        var businessProfileValidationRequestTopic: String = ""
+        var businessProfileValidationResponseTopic: String = ""
     }
 
     class IntegrationProperties {
         var productSubscription = ProductSubscriptionProperties()
 
         class ProductSubscriptionProperties {
-            lateinit var url: String
+            var url: String = ""
         }
     }
 

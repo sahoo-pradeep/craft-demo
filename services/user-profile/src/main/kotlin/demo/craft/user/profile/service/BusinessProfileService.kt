@@ -17,6 +17,7 @@ import demo.craft.user.profile.domain.mapper.toChangeRequest
 import demo.craft.user.profile.domain.mapper.toKafkaPayload
 import demo.craft.user.profile.lock.UserProfileLockManager
 import demo.craft.user.profile.mapper.toKeyValueString
+import java.util.UUID
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 
@@ -52,6 +53,7 @@ class BusinessProfileService(
             val changeRequest =
                 businessProfileChangeRequestAccess.createChangeRequest(
                     businessProfile.toChangeRequest(
+                        UUID.randomUUID().toString(),
                         ChangeRequestOperation.CREATE
                     )
                 )
@@ -80,6 +82,7 @@ class BusinessProfileService(
             val changeRequest =
                 businessProfileChangeRequestAccess.createChangeRequest(
                     businessProfile.toChangeRequest(
+                        UUID.randomUUID().toString(),
                         ChangeRequestOperation.UPDATE
                     )
                 )

@@ -14,14 +14,14 @@ data class BusinessProfile(
     val userId: String,
     val companyName: String,
     val legalName: String,
-    @OneToOne
-    val businessAddress: Address,
-    @OneToOne
-    val legalAddress: Address,
     val pan: String,
     val ein: String,
     val email: String,
     val website: String? = null,
+    @OneToOne
+    val businessAddress: Address,
+    @OneToOne
+    val legalAddress: Address,
     @CreationTimestamp
     val createdAt: LocalDateTime? = null,
     @UpdateTimestamp

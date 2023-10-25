@@ -27,10 +27,10 @@ create table business_profile(
     updated_at          timestamp not null,
 
     constraint business_profile_business_address_id_fkey
-        foreign key (business_address_id) references address (id),
+        foreign key (business_address_id) references address(id),
 
     constraint business_profile_legal_address_id_fkey
-        foreign key (legal_address_id) references address (id)
+        foreign key (legal_address_id) references address(id)
 );
 -- index to fetch business profile by user id
 create unique index business_profile_user_id_key
@@ -54,10 +54,10 @@ create table business_profile_change_request(
     updated_at          timestamp not null,
 
     constraint business_profile_change_request_business_address_id_fkey
-        foreign key (business_address_id) references address (id),
+        foreign key (business_address_id) references address(id),
 
     constraint business_profile_change_request_legal_address_id_fkey
-        foreign key (legal_address_id) references address (id)
+        foreign key (legal_address_id) references address(id)
 );
 
 -- unique index on request_id to ensure all request_id are unique
@@ -74,7 +74,10 @@ create table change_request_product_status(
     product         varchar not null,
     status          varchar not null,
     created_at      timestamp not null,
-    updated_at      timestamp not null
+    updated_at      timestamp not null,
+
+    constraint change_request_product_status_request_id_fkey
+        foreign key (request_id) references business_profile_change_request(request_id)
 );
 
 -- unique index to fetch product status by requestId
@@ -87,7 +90,10 @@ create table change_request_failure_reason(
     product         varchar not null,
     field           varchar not null,
     reason          varchar,
-    created_at      timestamp not null
+    created_at      timestamp not null,
+
+    constraint change_request_failure_reason_request_id_fkey
+        foreign key (request_id) references business_profile_change_request(request_id)
 );
 
 -- unique index to fetch failure reason by requestId

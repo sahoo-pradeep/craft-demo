@@ -15,18 +15,18 @@ data class BusinessProfileChangeRequest(
     val userId: String,
     @Enumerated(EnumType.STRING)
     val operation: ChangeRequestOperation,
+    @Enumerated(EnumType.STRING)
+    val status: ChangeRequestStatus,
     val companyName: String,
     val legalName: String,
-    @OneToOne
-    val businessAddress: Address,
-    @OneToOne
-    val legalAddress: Address,
     val pan: String,
     val ein: String,
     val email: String,
     val website: String? = null,
-    @Enumerated(EnumType.STRING)
-    val status: ChangeRequestStatus,
+    @OneToOne
+    val businessAddress: Address,
+    @OneToOne
+    val legalAddress: Address,
     @CreationTimestamp
     val createdAt: LocalDateTime? = null,
     @UpdateTimestamp

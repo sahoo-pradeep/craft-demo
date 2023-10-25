@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.time.Duration
+import java.util.concurrent.TimeoutException
 
 class PostgresLockManager(
     private val jdbcTemplate: JdbcTemplate,
@@ -33,7 +34,7 @@ class PostgresLockManager(
                 log.debug { "Waiting for $retryDelayInMs ms to acquire $logSuffix" }
                 Thread.sleep(retryDelayInMs)
             } else {
-                throw RuntimeException("Timed out waiting for $logSuffix")
+                throw TimeoutException("Timed out waiting for $logSuffix")
             }
         }
         log.info { "Acquired $logSuffix in ${System.currentTimeMillis() - startMs} ms" }
