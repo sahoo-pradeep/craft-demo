@@ -6,7 +6,7 @@ import demo.craft.user.profile.domain.enums.ChangeRequestStatus
 
 interface ChangeRequestProductStatusAccess {
     /** Get change request product status by [requestId] */
-    fun findByRequestId(requestId: String): List<ChangeRequestProductStatus>
+    fun findAllByRequestId(requestId: String): List<ChangeRequestProductStatus>
 
     fun existsByRequestId(requestId: String): Boolean
 

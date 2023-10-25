@@ -36,7 +36,7 @@ class BusinessProfileChangeRequestService(
     private fun getCompleteChangeRequestStatus(
         changeRequest: BusinessProfileChangeRequest
     ): BusinessProfileChangeRequestWrapper {
-        val productStatuses = changeRequestProductStatusAccess.findByRequestId(changeRequest.requestId)
+        val productStatuses = changeRequestProductStatusAccess.findAllByRequestId(changeRequest.requestId)
         val failureReasons = changeRequestFailureReasonAccess.findAllByRequestId(changeRequest.requestId)
 
         return BusinessProfileChangeRequestWrapper(

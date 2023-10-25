@@ -14,7 +14,7 @@ internal class ChangeRequestProductStatusRdsImpl(
     private val changeRequestProductStatusRepository: ChangeRequestProductStatusRepository
 ) : ChangeRequestProductStatusAccess {
     private val log = KotlinLogging.logger {}
-    override fun findByRequestId(requestId: String): List<ChangeRequestProductStatus> =
+    override fun findAllByRequestId(requestId: String): List<ChangeRequestProductStatus> =
         changeRequestProductStatusRepository.findByRequestId(requestId)
 
     override fun existsByRequestId(requestId: String): Boolean =
@@ -31,7 +31,7 @@ internal class ChangeRequestProductStatusRdsImpl(
         }
 
         val requestId = requestIds.first()
-        if (findByRequestId(requestId).isNotEmpty()) {
+        if (findAllByRequestId(requestId).isNotEmpty()) {
             throw IllegalArgumentException("ChangeRequestProductStatus is already created with requestId $requestId")
         }
 
