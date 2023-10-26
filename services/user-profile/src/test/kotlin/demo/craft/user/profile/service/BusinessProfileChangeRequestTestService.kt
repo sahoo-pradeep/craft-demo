@@ -1,11 +1,11 @@
 package demo.craft.user.profile.service
 
-import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
+import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
 import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_2
-import demo.craft.user.profile.TestConstant.CHANGE_REQUEST_FAILURE_REASON_1
-import demo.craft.user.profile.TestConstant.CHANGE_REQUEST_FAILURE_REASON_2
-import demo.craft.user.profile.TestConstant.CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_1
-import demo.craft.user.profile.TestConstant.CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_2
+import demo.craft.user.profile.TestConstant.CHANGE_REQUEST_FAILURE_REASON_3
+import demo.craft.user.profile.TestConstant.CHANGE_REQUEST_FAILURE_REASON_4
+import demo.craft.user.profile.TestConstant.CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_3
+import demo.craft.user.profile.TestConstant.CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_4
 import demo.craft.user.profile.TestConstant.REQUEST_ID_1
 import demo.craft.user.profile.TestConstant.REQUEST_ID_2
 import demo.craft.user.profile.TestConstant.USER_1
@@ -52,15 +52,15 @@ class BusinessProfileChangeRequestTestService {
         every {
             changeRequestProductStatusAccess.findAllByRequestId(REQUEST_ID_2)
         } returns listOf(
-            CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_1,
-            CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_2
+            CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_3,
+            CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_4
         )
 
         every {
             changeRequestFailureReasonAccess.findAllByRequestId(REQUEST_ID_2)
         } returns listOf(
-            CHANGE_REQUEST_FAILURE_REASON_1,
-            CHANGE_REQUEST_FAILURE_REASON_2
+            CHANGE_REQUEST_FAILURE_REASON_3,
+            CHANGE_REQUEST_FAILURE_REASON_4
         )
 
         //when
@@ -71,15 +71,15 @@ class BusinessProfileChangeRequestTestService {
             changeRequest = BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_2,
             productStatuses = listOf(
                 ChangeRequestProductStatusWrapper(
-                    productStatus = CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_1,
+                    productStatus = CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_3,
                     failureReasons = listOf(
-                        CHANGE_REQUEST_FAILURE_REASON_1
+                        CHANGE_REQUEST_FAILURE_REASON_3
                     )
                 ),
                 ChangeRequestProductStatusWrapper(
-                    productStatus = CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_2,
+                    productStatus = CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_4,
                     failureReasons = listOf(
-                        CHANGE_REQUEST_FAILURE_REASON_2
+                        CHANGE_REQUEST_FAILURE_REASON_4
                     )
                 )
             )
@@ -100,7 +100,7 @@ class BusinessProfileChangeRequestTestService {
         //given
         every {
             businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_1)
-        } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
+        } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
 
         //when
         val exception = assertThrows<Exception> {
@@ -140,20 +140,20 @@ class BusinessProfileChangeRequestTestService {
         //given
         every {
             businessProfileChangeRequestAccess.findTopChangeRequest(USER_1)
-        } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
+        } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
 
         every {
             changeRequestProductStatusAccess.findAllByRequestId(REQUEST_ID_1)
         } returns listOf(
-            CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_1,
-            CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_2
+            CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_3,
+            CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_4
         )
 
         every {
             changeRequestFailureReasonAccess.findAllByRequestId(REQUEST_ID_1)
         } returns listOf(
-            CHANGE_REQUEST_FAILURE_REASON_1,
-            CHANGE_REQUEST_FAILURE_REASON_2
+            CHANGE_REQUEST_FAILURE_REASON_3,
+            CHANGE_REQUEST_FAILURE_REASON_4
         )
 
         //when
@@ -161,18 +161,18 @@ class BusinessProfileChangeRequestTestService {
 
         //then
         val expectedResponse = BusinessProfileChangeRequestWrapper(
-            changeRequest = BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1,
+            changeRequest = BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1,
             productStatuses = listOf(
                 ChangeRequestProductStatusWrapper(
-                    productStatus = CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_1,
+                    productStatus = CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_3,
                     failureReasons = listOf(
-                        CHANGE_REQUEST_FAILURE_REASON_1
+                        CHANGE_REQUEST_FAILURE_REASON_3
                     )
                 ),
                 ChangeRequestProductStatusWrapper(
-                    productStatus = CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_2,
+                    productStatus = CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_4,
                     failureReasons = listOf(
-                        CHANGE_REQUEST_FAILURE_REASON_2
+                        CHANGE_REQUEST_FAILURE_REASON_4
                     )
                 )
             )

@@ -2,7 +2,7 @@ package demo.craft.user.profile.service
 
 import demo.craft.common.communication.kafka.KafkaPublisher
 import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_1
-import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
+import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
 import demo.craft.user.profile.TestConstant.USER_1
 import demo.craft.user.profile.TestLockManager
 import demo.craft.user.profile.common.config.UserProfileProperties
@@ -76,13 +76,13 @@ class BusinessProfileServiceTest {
         //given
         every { businessProfileAccess.findByUserId(USER_1) } returns null
         every { kafkaPublisher.publish(any(), any(), any()) } returns Unit
-        every { businessProfileChangeRequestAccess.createChangeRequest(any()) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
+        every { businessProfileChangeRequestAccess.createChangeRequest(any()) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
 
         // when
         val changeRequest = businessProfileService.createBusinessProfile(BUSINESS_PROFILE_1)
 
         // then
-        assertEquals(BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1, changeRequest)
+        assertEquals(BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1, changeRequest)
 
         verify(exactly = 1) { businessProfileAccess.findByUserId(USER_1) }
         verify(exactly = 1) { businessProfileChangeRequestAccess.createChangeRequest(any()) }
@@ -128,13 +128,13 @@ class BusinessProfileServiceTest {
         //given
         every { businessProfileAccess.findByUserId(USER_1) } returns null
         every { kafkaPublisher.publish(any(), any(), any()) } throws RuntimeException()
-        every { businessProfileChangeRequestAccess.createChangeRequest(any()) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
+        every { businessProfileChangeRequestAccess.createChangeRequest(any()) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
 
         // when
         val changeRequest = businessProfileService.createBusinessProfile(BUSINESS_PROFILE_1)
 
         // then
-        assertEquals(BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1, changeRequest)
+        assertEquals(BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1, changeRequest)
 
         verify(exactly = 1) { businessProfileAccess.findByUserId(USER_1) }
         verify(exactly = 1) { businessProfileChangeRequestAccess.createChangeRequest(any()) }
@@ -146,13 +146,13 @@ class BusinessProfileServiceTest {
         //given
         every { businessProfileAccess.findByUserId(USER_1) } returns BUSINESS_PROFILE_1
         every { kafkaPublisher.publish(any(), any(), any()) } returns Unit
-        every { businessProfileChangeRequestAccess.createChangeRequest(any()) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
+        every { businessProfileChangeRequestAccess.createChangeRequest(any()) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
 
         // when
         val changeRequest = businessProfileService.updateBusinessProfile(BUSINESS_PROFILE_1)
 
         // then
-        assertEquals(BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1, changeRequest)
+        assertEquals(BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1, changeRequest)
 
         verify(exactly = 1) { businessProfileAccess.findByUserId(USER_1) }
         verify(exactly = 1) { businessProfileChangeRequestAccess.createChangeRequest(any()) }

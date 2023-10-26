@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component
 class ValidationResponseListener(
     private val businessProfileAccess: BusinessProfileAccess,
     private val businessProfileChangeRequestAccess: BusinessProfileChangeRequestAccess,
-    private val changeRequestProductStatusRepository: ChangeRequestProductStatusAccess,
+    private val changeRequestProductStatusAccess: ChangeRequestProductStatusAccess,
     private val changeRequestFailureReasonAccess: ChangeRequestFailureReasonAccess,
     private val lockManager: UserProfileLockManager,
     private val userProfileProperties: UserProfileProperties
@@ -38,15 +38,16 @@ class ValidationResponseListener(
         log.info { "Received kafka message. Topic: $topicName. Message: $kafkaMessage" }
         val validationResponse = objectMapper.readValue(kafkaMessage, BusinessProfileValidationResponse::class.java)
 
-        changeRequestProductStatusRepository.findByRequestIdAndProduct(validationResponse.requestId, validationResponse.product)?.let {
-            if (it.status.isTerminal()) {
-                log.warn { "Validation status for given product is already in terminal state. payload: $kafkaMessage" }
-                return
-            }
-        } ?: log.error { "Investigate! Change request product status not found. payload: $kafkaMessage" }.run { return }
-
         lockManager.doExclusively(validationResponse.userId) {
-            changeRequestProductStatusRepository
+            val currentProductStatus = changeRequestProductStatusAccess.findByRequestIdAndProduct(validationResponse.requestId, validationResponse.product)
+                ?: log.warn { "Investigate! Change request product status not found. payload: $kafkaMessage" }.run { return@doExclusively }
+
+            if (currentProductStatus.status.isTerminal()) {
+                log.warn { "Validation status for given product is already in terminal state. payload: $kafkaMessage" }
+                return@doExclusively
+            }
+
+            changeRequestProductStatusAccess
                 .updateStatus(validationResponse.requestId, validationResponse.product, validationResponse.status)
 
             if (validationResponse.status == ChangeRequestStatus.REJECTED && validationResponse.failureReasons.isNotEmpty()) {
@@ -57,21 +58,21 @@ class ValidationResponseListener(
                 )
             }
 
+            // Update status in change request based on product validation status
             val changeRequest = businessProfileChangeRequestAccess.findByRequestId(validationResponse.requestId)!!
-
-            if (!changeRequest.status.isTerminal()) {
-                // no need to update change request status
+            if (changeRequest.status.isTerminal()) {
+                // change request is already in terminal state.
                 return@doExclusively
             }
 
-            val changeRequestProductStatuses = changeRequestProductStatusRepository.findAllByRequestId(validationResponse.requestId)
+            val allProductStatuses = changeRequestProductStatusAccess.findAllByRequestId(validationResponse.requestId)
 
-            if (changeRequestProductStatuses.any { it.status == ChangeRequestStatus.REJECTED }) {
+            if (allProductStatuses.any { it.status == ChangeRequestStatus.REJECTED }) {
                 businessProfileChangeRequestAccess.updateStatus(validationResponse.userId, validationResponse.requestId, ChangeRequestStatus.REJECTED)
                 return@doExclusively
             }
 
-            if (changeRequestProductStatuses.all { it.status == ChangeRequestStatus.ACCEPTED }) {
+            if (allProductStatuses.all { it.status == ChangeRequestStatus.ACCEPTED }) {
                 businessProfileChangeRequestAccess.updateStatus(validationResponse.userId, validationResponse.requestId, ChangeRequestStatus.ACCEPTED)
                 businessProfileAccess.updateBusinessProfile(changeRequest)
                 return@doExclusively

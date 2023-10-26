@@ -6,7 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import demo.craft.common.communication.kafka.KafkaPublisher
 import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_1
 import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CHANGE_REQUEST_KAFKA_PAYLOAD_1
-import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
+import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
 import demo.craft.user.profile.TestConstant.CHANGE_REQUEST_PRODUCT_STATUS_IN_PROGRESS_1
 import demo.craft.user.profile.TestConstant.PRODUCT_SUBSCRIPTION_1
 import demo.craft.user.profile.TestConstant.PRODUCT_SUBSCRIPTION_2
@@ -68,7 +68,7 @@ class ChangeRequestListenerTest {
     fun `process change request happy case`() {
         // given
         every { changeRequestProductStatusAccess.existsByRequestId(REQUEST_ID_1) } returns false
-        every { businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_1) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
+        every { businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_1) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
         every { businessProfileAccess.findByUserId(USER_1) } returns BUSINESS_PROFILE_1
         every {
             productSubscriptionIntegration.getProductSubscriptions(USER_1)
@@ -134,14 +134,14 @@ class ChangeRequestListenerTest {
     fun `process change request with no product subscribed by user`() {
         // given
         every { changeRequestProductStatusAccess.existsByRequestId(REQUEST_ID_1) } returns false
-        every { businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_1) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1
+        every { businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_1) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
         every { businessProfileAccess.findByUserId(USER_1) } returns BUSINESS_PROFILE_1
         every {
             productSubscriptionIntegration.getProductSubscriptions(USER_1)
         } returns listOf()
         every {
             businessProfileChangeRequestAccess.updateStatus(USER_1, REQUEST_ID_1, FAILED)
-        } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1.copy(status = FAILED)
+        } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1.copy(status = FAILED)
 
         // when
         val kafkaPayload = objectMapper.writeValueAsString(BUSINESS_PROFILE_CHANGE_REQUEST_KAFKA_PAYLOAD_1)

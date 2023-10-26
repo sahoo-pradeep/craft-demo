@@ -11,6 +11,7 @@ import demo.craft.user.profile.domain.enums.ChangeRequestOperation
 import demo.craft.user.profile.domain.enums.ChangeRequestStatus
 import demo.craft.user.profile.domain.enums.FieldName
 import demo.craft.user.profile.domain.kafka.BusinessProfileChangeRequestKafkaPayload
+import demo.craft.user.profile.domain.kafka.BusinessProfileValidationResponse
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -60,7 +61,7 @@ object TestConstant {
         updatedAt = DATE_TIME_1
     )
 
-    val BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_1 = BusinessProfileChangeRequest(
+    val BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1 = BusinessProfileChangeRequest(
         id = 1,
         requestId = REQUEST_ID_1,
         userId = USER_1,
@@ -78,8 +79,44 @@ object TestConstant {
         updatedAt = DATE_TIME_1
     )
 
-    val BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_2 = BusinessProfileChangeRequest(
+    val BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_ACCEPTED_1 = BusinessProfileChangeRequest(
         id = 1,
+        requestId = REQUEST_ID_1,
+        userId = USER_1,
+        operation = ChangeRequestOperation.CREATE,
+        status = ChangeRequestStatus.ACCEPTED,
+        companyName = COMPANY_NAME_1,
+        legalName = LEGAL_NAME_1,
+        pan = PAN_1,
+        ein = EIN_1,
+        email = EMAIL_1,
+        website = WEBSITE_1,
+        businessAddress = ADDRESS_1,
+        legalAddress = ADDRESS_1,
+        createdAt = DATE_TIME_1,
+        updatedAt = DATE_TIME_1
+    )
+
+    val BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_REJECTED_1 = BusinessProfileChangeRequest(
+        id = 1,
+        requestId = REQUEST_ID_1,
+        userId = USER_1,
+        operation = ChangeRequestOperation.CREATE,
+        status = ChangeRequestStatus.REJECTED,
+        companyName = COMPANY_NAME_1,
+        legalName = LEGAL_NAME_1,
+        pan = PAN_1,
+        ein = EIN_1,
+        email = EMAIL_1,
+        website = WEBSITE_1,
+        businessAddress = ADDRESS_1,
+        legalAddress = ADDRESS_1,
+        createdAt = DATE_TIME_1,
+        updatedAt = DATE_TIME_1
+    )
+
+    val BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_2 = BusinessProfileChangeRequest(
+        id = 2,
         requestId = REQUEST_ID_2,
         userId = USER_1,
         operation = ChangeRequestOperation.CREATE,
@@ -106,17 +143,35 @@ object TestConstant {
     )
 
     val CHANGE_REQUEST_PRODUCT_STATUS_IN_PROGRESS_2 = ChangeRequestProductStatus(
-        id = 1,
-        requestId = REQUEST_ID_2,
+        id = 2,
+        requestId = REQUEST_ID_1,
         product = PRODUCT_2,
         status = ChangeRequestStatus.IN_PROGRESS,
         createdAt = DATE_TIME_1,
         updatedAt = DATE_TIME_1
     )
 
+    val CHANGE_REQUEST_PRODUCT_STATUS_ACCEPTED_1 = ChangeRequestProductStatus(
+        id = 1,
+        requestId = REQUEST_ID_1,
+        product = PRODUCT_1,
+        status = ChangeRequestStatus.ACCEPTED,
+        createdAt = DATE_TIME_1,
+        updatedAt = DATE_TIME_1
+    )
+
+    val CHANGE_REQUEST_PRODUCT_STATUS_ACCEPTED_2 = ChangeRequestProductStatus(
+        id = 2,
+        requestId = REQUEST_ID_1,
+        product = PRODUCT_2,
+        status = ChangeRequestStatus.ACCEPTED,
+        createdAt = DATE_TIME_1,
+        updatedAt = DATE_TIME_1
+    )
+
     val CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_1 = ChangeRequestProductStatus(
         id = 1,
-        requestId = REQUEST_ID_2,
+        requestId = REQUEST_ID_1,
         product = PRODUCT_1,
         status = ChangeRequestStatus.REJECTED,
         createdAt = DATE_TIME_1,
@@ -124,7 +179,25 @@ object TestConstant {
     )
 
     val CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_2 = ChangeRequestProductStatus(
-        id = 1,
+        id = 2,
+        requestId = REQUEST_ID_1,
+        product = PRODUCT_2,
+        status = ChangeRequestStatus.REJECTED,
+        createdAt = DATE_TIME_1,
+        updatedAt = DATE_TIME_1
+    )
+
+    val CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_3 = ChangeRequestProductStatus(
+        id = 3,
+        requestId = REQUEST_ID_2,
+        product = PRODUCT_1,
+        status = ChangeRequestStatus.REJECTED,
+        createdAt = DATE_TIME_1,
+        updatedAt = DATE_TIME_1
+    )
+
+    val CHANGE_REQUEST_PRODUCT_STATUS_REJECTED_4 = ChangeRequestProductStatus(
+        id = 4,
         requestId = REQUEST_ID_2,
         product = PRODUCT_2,
         status = ChangeRequestStatus.REJECTED,
@@ -133,7 +206,16 @@ object TestConstant {
     )
 
     val CHANGE_REQUEST_FAILURE_REASON_1 = ChangeRequestFailureReason(
-        id = 1,
+        id = 3,
+        requestId = REQUEST_ID_1,
+        product = PRODUCT_1,
+        field = FieldName.PAN,
+        reason = PAN_FAILURE_REASON,
+        createdAt = DATE_TIME_1
+    )
+
+    val CHANGE_REQUEST_FAILURE_REASON_3 = ChangeRequestFailureReason(
+        id = 3,
         requestId = REQUEST_ID_2,
         product = PRODUCT_1,
         field = FieldName.PAN,
@@ -141,8 +223,8 @@ object TestConstant {
         createdAt = DATE_TIME_1
     )
 
-    val CHANGE_REQUEST_FAILURE_REASON_2 = ChangeRequestFailureReason(
-        id = 1,
+    val CHANGE_REQUEST_FAILURE_REASON_4 = ChangeRequestFailureReason(
+        id = 4,
         requestId = REQUEST_ID_2,
         product = PRODUCT_2,
         field = FieldName.EIN,
@@ -164,5 +246,25 @@ object TestConstant {
         userId = USER_1,
         requestId = REQUEST_ID_1,
         createdAt = DATE_TIME_1
+    )
+
+    val BUSINESS_PROFILE_VALIDATION_RESPONSE_ACCEPTED_1 = BusinessProfileValidationResponse(
+        userId = USER_1,
+        requestId = REQUEST_ID_1,
+        product = PRODUCT_1,
+        status = ChangeRequestStatus.ACCEPTED,
+        failureReasons = listOf()
+    )
+
+    val BUSINESS_PROFILE_VALIDATION_RESPONSE_REJECTED_FAILURE_REASON_1: List<Pair<FieldName, String>> = listOf(
+        Pair(FieldName.PAN, PAN_FAILURE_REASON)
+    )
+
+    val BUSINESS_PROFILE_VALIDATION_RESPONSE_REJECTED_1 = BusinessProfileValidationResponse(
+        userId = USER_1,
+        requestId = REQUEST_ID_1,
+        product = PRODUCT_1,
+        status = ChangeRequestStatus.REJECTED,
+        failureReasons = BUSINESS_PROFILE_VALIDATION_RESPONSE_REJECTED_FAILURE_REASON_1
     )
 }
