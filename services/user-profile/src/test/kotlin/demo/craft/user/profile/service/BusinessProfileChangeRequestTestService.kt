@@ -51,7 +51,7 @@ class BusinessProfileChangeRequestTestService {
     fun `get business profile change request details with all product status rejected`() {
         //given
         every {
-            businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_2)
+            businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_2)
         } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_REJECTED_2
 
         every {
@@ -95,7 +95,7 @@ class BusinessProfileChangeRequestTestService {
             Assertions.assertEquals(ChangeRequestStatus.REJECTED, changeRequestWrapper.changeRequest.status)
         }
 
-        verify(exactly = 1) { businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_2) }
+        verify(exactly = 1) { businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_2) }
         verify(exactly = 1) { changeRequestProductStatusAccess.findAllByRequestId(REQUEST_ID_2) }
         verify(exactly = 1) { changeRequestFailureReasonAccess.findAllByRequestId(REQUEST_ID_2) }
     }
@@ -104,7 +104,7 @@ class BusinessProfileChangeRequestTestService {
     fun `get business profile change request details for some other user`() {
         //given
         every {
-            businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_1)
+            businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_1)
         } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
 
         //when
@@ -115,7 +115,7 @@ class BusinessProfileChangeRequestTestService {
         //then
         Assertions.assertEquals(UnauthorizedUserException::class, exception::class)
 
-        verify(exactly = 1) { businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_1) }
+        verify(exactly = 1) { businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_1) }
         verify(exactly = 0) { changeRequestProductStatusAccess.findAllByRequestId(REQUEST_ID_1) }
         verify(exactly = 0) { changeRequestFailureReasonAccess.findAllByRequestId(REQUEST_ID_1) }
     }
@@ -124,7 +124,7 @@ class BusinessProfileChangeRequestTestService {
     fun `get business profile change request details with invalid request id`() {
         //given
         every {
-            businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_1)
+            businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_1)
         } returns null
 
         //when
@@ -135,7 +135,7 @@ class BusinessProfileChangeRequestTestService {
         //then
         Assertions.assertEquals(BusinessProfileChangeRequestNotFoundException::class, exception::class)
 
-        verify(exactly = 1) { businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_1) }
+        verify(exactly = 1) { businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_1) }
         verify(exactly = 0) { changeRequestProductStatusAccess.findAllByRequestId(REQUEST_ID_1) }
         verify(exactly = 0) { changeRequestFailureReasonAccess.findAllByRequestId(REQUEST_ID_1) }
     }

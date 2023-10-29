@@ -1,6 +1,10 @@
 package demo.craft.user.profile.dao.access.impl.rds
 
 import demo.craft.common.domain.enums.Product
+import demo.craft.user.profile.common.exception.InvalidProductStatusException
+import demo.craft.user.profile.common.exception.ProductStatusAlreadyExistsException
+import demo.craft.user.profile.common.exception.ProductStatusIllegalStateException
+import demo.craft.user.profile.common.exception.ProductStatusNotFoundException
 import demo.craft.user.profile.dao.access.ChangeRequestProductStatusAccess
 import demo.craft.user.profile.dao.repository.ChangeRequestProductStatusRepository
 import demo.craft.user.profile.domain.entity.ChangeRequestProductStatus
@@ -17,26 +21,28 @@ internal class ChangeRequestProductStatusRdsImpl(
     override fun findAllByRequestId(requestId: String): List<ChangeRequestProductStatus> =
         changeRequestProductStatusRepository.findByRequestId(requestId)
 
-    override fun existsByRequestId(requestId: String): Boolean =
-        changeRequestProductStatusRepository.existsByRequestId(requestId)
-
     override fun findByRequestIdAndProduct(requestId: String, product: Product): ChangeRequestProductStatus? =
-        changeRequestProductStatusRepository.findByRequestIdAndProduct(requestId, product)
+        findAllByRequestId(requestId).first { it.product == product }
 
     @Transactional
-    override fun createNewEntries(entities: List<ChangeRequestProductStatus>): List<ChangeRequestProductStatus> {
-        val requestIds = entities.map { it.requestId }.distinct()
+    override fun createNewProductStatuses(productStatuses: List<ChangeRequestProductStatus>): List<ChangeRequestProductStatus> {
+        if (productStatuses.isEmpty()) {
+            log.warn { "input list is empty for creating new product statuses" }
+            return emptyList()
+        }
+
+        val requestIds = productStatuses.map { it.requestId }.distinct()
         if (requestIds.count() > 1) {
-            throw IllegalArgumentException("Investigate! entries have different requestIds: $requestIds in create ChangeRequestProductStatus request")
+            throw InvalidProductStatusException("entries have different requestIds: $requestIds in create ChangeRequestProductStatus request")
         }
 
         val requestId = requestIds.first()
-        if (findAllByRequestId(requestId).isNotEmpty()) {
-            throw IllegalArgumentException("ChangeRequestProductStatus is already created with requestId $requestId")
+        if (changeRequestProductStatusRepository.existsByRequestId(requestId)) {
+            throw ProductStatusAlreadyExistsException(requestId)
         }
 
         return changeRequestProductStatusRepository.saveAll(
-            entities.map { it.copy(id = null) }
+            productStatuses.map { it.copy(id = null) }
         ).also {
             log.info { "ChangeRequestProductStatus created with requestId: $requestId. Count: ${it.size}" }
         }
@@ -45,10 +51,10 @@ internal class ChangeRequestProductStatusRdsImpl(
     // TODO: Custom Exception can be used in place of IllegalArgumentException
     override fun updateStatus(requestId: String, product: Product, status: ChangeRequestStatus): ChangeRequestProductStatus {
         val productStatus = findByRequestIdAndProduct(requestId, product)
-            ?: throw IllegalArgumentException("ChangeRequestProductStatus with requestId: $requestId and product: $product doesn't exist")
+            ?: throw ProductStatusNotFoundException(requestId, product.name)
 
         if (productStatus.status.isTerminal()) {
-            throw IllegalArgumentException("State update for product status with requestId $requestId is not allowed as current status is terminal")
+            throw ProductStatusIllegalStateException(requestId, productStatus.status.name, status.name)
         }
 
         return changeRequestProductStatusRepository.save(productStatus.copy(status = status)).also {

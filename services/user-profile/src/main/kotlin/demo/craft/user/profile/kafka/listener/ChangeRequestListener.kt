@@ -44,8 +44,9 @@ class ChangeRequestListener(
         val topicName = kafkaProperties.businessProfileChangeRequestTopic
         log.info { "Received kafka message. Topic: $topicName. Message: $message" }
         val changeRequestKafkaPayload = objectMapper.readValue(message, BusinessProfileChangeRequestKafkaPayload::class.java)
-
-        if (changeRequestProductStatusAccess.existsByRequestId(changeRequestKafkaPayload.requestId)) {
+        val userId = changeRequestKafkaPayload.userId
+        val requestId = changeRequestKafkaPayload.requestId
+        if (changeRequestProductStatusAccess.findAllByRequestId(requestId).isNotEmpty()) {
             log.error {
                 "Change request is already published to subscribed products. " +
                     "Ignoring publishing change request: $changeRequestKafkaPayload"
@@ -53,27 +54,27 @@ class ChangeRequestListener(
             return
         }
 
-        lockManager.doExclusively(changeRequestKafkaPayload.userId) {
-            val changeRequest = businessProfileChangeRequestAccess.findByRequestId(changeRequestKafkaPayload.requestId)
-                ?: throw BusinessProfileChangeRequestNotFoundException(changeRequestKafkaPayload.userId, changeRequestKafkaPayload.requestId)
+        lockManager.doExclusively(userId) {
+            val changeRequest = businessProfileChangeRequestAccess.findByUserIdAndRequestId(userId, requestId)
+                ?: throw BusinessProfileChangeRequestNotFoundException(userId, requestId)
 
-            val currentProfile = businessProfileAccess.findByUserId(changeRequestKafkaPayload.userId)
+            val currentProfile = businessProfileAccess.findByUserId(userId)
 
-            val activeProductSubscriptions = productSubscriptionIntegration.getProductSubscriptions(changeRequestKafkaPayload.userId)
+            val activeProductSubscriptions = productSubscriptionIntegration.getProductSubscriptions(userId)
                 .filter { it.status == ProductSubscriptionStatus.ACTIVE }
 
             if (activeProductSubscriptions.isEmpty()) {
-                log.error { "Investigate! Change request received for a user ${changeRequestKafkaPayload.userId} with no active product subscriptions" }
-                businessProfileChangeRequestAccess.updateStatus(changeRequestKafkaPayload.userId, changeRequestKafkaPayload.requestId, ChangeRequestStatus.FAILED)
+                log.error { "Investigate! Change request received for a user ${userId} with no active product subscriptions" }
+                businessProfileChangeRequestAccess.updateStatus(userId, requestId, ChangeRequestStatus.FAILED)
                 return@doExclusively
             }
 
-            changeRequestProductStatusAccess.createNewEntries(
-                activeProductSubscriptions.toChangeRequestProductStatuses(changeRequestKafkaPayload.requestId, ChangeRequestStatus.IN_PROGRESS)
+            changeRequestProductStatusAccess.createNewProductStatuses(
+                activeProductSubscriptions.toChangeRequestProductStatuses(requestId, ChangeRequestStatus.IN_PROGRESS)
             )
 
             val kafkaPayload = objectMapper.writeValueAsString(BusinessProfileValidationRequest(currentProfile, changeRequest))
-            kafkaPublisher.publish(kafkaProperties.businessProfileValidationRequestTopic, changeRequestKafkaPayload.userId.hashCode(), kafkaPayload)
+            kafkaPublisher.publish(kafkaProperties.businessProfileValidationRequestTopic, userId.hashCode(), kafkaPayload)
         }
     }
 }

@@ -2,12 +2,12 @@ package demo.craft.quickbooks.payroll
 
 import demo.craft.common.communication.config.CommunicationProperties
 import demo.craft.quickbooks.payroll.config.QuickbooksPayrollProperties
+import java.time.ZoneId
+import java.util.TimeZone
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
-import java.time.ZoneId
-import java.util.*
 
 @SpringBootApplication(
     exclude = [DataSourceAutoConfiguration::class],

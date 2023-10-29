@@ -1,5 +1,6 @@
 package demo.craft.user.profile.dao.access.impl.rds
 
+import demo.craft.user.profile.common.exception.BusinessProfileChangeRequestIllegalStateException
 import demo.craft.user.profile.common.exception.BusinessProfileChangeRequestNotFoundException
 import demo.craft.user.profile.common.exception.BusinessProfileUpdateAlreadyInProgressException
 import demo.craft.user.profile.dao.access.BusinessProfileChangeRequestAccess
@@ -15,14 +16,12 @@ internal class BusinessProfileChangeRequestRdsImpl(
     private val businessProfileChangeRequestRepository: BusinessProfileChangeRequestRepository,
     private val addressRepository: AddressRepository,
 ) : BusinessProfileChangeRequestAccess {
+
     override fun findAllByUserId(userId: String): List<BusinessProfileChangeRequest> =
         businessProfileChangeRequestRepository.findAllByUserIdOrderByIdAsc(userId)
 
-    override fun findByRequestId(requestId: String): BusinessProfileChangeRequest? =
-        businessProfileChangeRequestRepository.findByRequestId(requestId)
-
-    override fun findTopChangeRequest(userId: String): BusinessProfileChangeRequest? =
-        businessProfileChangeRequestRepository.findTopByUserIdOrderByCreatedAtDesc(userId)
+    override fun findByUserIdAndRequestId(userId: String, requestId: String): BusinessProfileChangeRequest? =
+        findAllByUserId(userId).find { it.requestId == requestId }
 
     @Transactional
     override fun createChangeRequest(
@@ -32,10 +31,10 @@ internal class BusinessProfileChangeRequestRdsImpl(
             throw BusinessProfileUpdateAlreadyInProgressException(businessProfileChangeRequest.userId)
         }
 
-        val persistedBusinessAddress = addressRepository.save(businessProfileChangeRequest.businessAddress)
-        val persistedLegalAddress = addressRepository.save(businessProfileChangeRequest.legalAddress)
+        val persistedBusinessAddress = addressRepository.saveAndFlush(businessProfileChangeRequest.businessAddress)
+        val persistedLegalAddress = addressRepository.saveAndFlush(businessProfileChangeRequest.legalAddress)
 
-        return businessProfileChangeRequestRepository.save(
+        return businessProfileChangeRequestRepository.saveAndFlush(
             businessProfileChangeRequest.copy(
                 businessAddress = persistedBusinessAddress,
                 legalAddress = persistedLegalAddress
@@ -43,13 +42,14 @@ internal class BusinessProfileChangeRequestRdsImpl(
         )
     }
 
+    // note: data should be fetched from DB instead of cache to avoid updating any stale data
     override fun updateStatus(userId: String, requestId: String, updatedStatus: ChangeRequestStatus): BusinessProfileChangeRequest {
-        val changeRequest = findByRequestId(requestId)
+        val changeRequest = businessProfileChangeRequestRepository.findByUserIdAndRequestId(userId, requestId)
             ?: throw BusinessProfileChangeRequestNotFoundException(userId, requestId)
         if (changeRequest.status.isTerminal()) {
-            throw IllegalArgumentException("State update for change request with requestId $requestId is not allowed as current status is in terminal state")
+            throw BusinessProfileChangeRequestIllegalStateException(userId, requestId, changeRequest.status.name, updatedStatus.name)
         }
 
-        return businessProfileChangeRequestRepository.save(changeRequest.copy(status = updatedStatus))
+        return businessProfileChangeRequestRepository.saveAndFlush(changeRequest.copy(status = updatedStatus))
     }
 }

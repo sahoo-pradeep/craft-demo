@@ -37,9 +37,10 @@ class ValidationResponseListener(
         val topicName = userProfileProperties.kafka.businessProfileValidationResponseTopic
         log.info { "Received kafka message. Topic: $topicName. Message: $kafkaMessage" }
         val validationResponse = objectMapper.readValue(kafkaMessage, BusinessProfileValidationResponse::class.java)
-
-        lockManager.doExclusively(validationResponse.userId) {
-            val currentProductStatus = changeRequestProductStatusAccess.findByRequestIdAndProduct(validationResponse.requestId, validationResponse.product)
+        val userId = validationResponse.userId
+        val requestId = validationResponse.requestId
+        lockManager.doExclusively(userId) {
+            val currentProductStatus = changeRequestProductStatusAccess.findByRequestIdAndProduct(requestId, validationResponse.product)
                 ?: log.warn { "Investigate! Change request product status not found. payload: $kafkaMessage" }.run { return@doExclusively }
 
             if (currentProductStatus.status.isTerminal()) {
@@ -48,33 +49,33 @@ class ValidationResponseListener(
             }
 
             changeRequestProductStatusAccess
-                .updateStatus(validationResponse.requestId, validationResponse.product, validationResponse.status)
+                .updateStatus(requestId, validationResponse.product, validationResponse.status)
 
             if (validationResponse.status == ChangeRequestStatus.REJECTED && validationResponse.failureReasons.isNotEmpty()) {
                 changeRequestFailureReasonAccess.saveAllFailureReason(
-                    validationResponse.requestId,
+                    requestId,
                     validationResponse.product,
                     validationResponse.failureReasons
                 )
             }
 
             // Update status in change request based on product validation status
-            val changeRequest = businessProfileChangeRequestAccess.findByRequestId(validationResponse.requestId)!!
+            val changeRequest = businessProfileChangeRequestAccess.findByUserIdAndRequestId(userId, requestId)!!
             if (changeRequest.status.isTerminal()) {
                 // change request is already in terminal state.
                 return@doExclusively
             }
 
-            val allProductStatuses = changeRequestProductStatusAccess.findAllByRequestId(validationResponse.requestId)
+            val allProductStatuses = changeRequestProductStatusAccess.findAllByRequestId(requestId)
 
             if (allProductStatuses.any { it.status == ChangeRequestStatus.REJECTED }) {
-                businessProfileChangeRequestAccess.updateStatus(validationResponse.userId, validationResponse.requestId, ChangeRequestStatus.REJECTED)
+                businessProfileChangeRequestAccess.updateStatus(userId, requestId, ChangeRequestStatus.REJECTED)
                 return@doExclusively
             }
 
             if (allProductStatuses.all { it.status == ChangeRequestStatus.ACCEPTED }) {
-                businessProfileChangeRequestAccess.updateStatus(validationResponse.userId, validationResponse.requestId, ChangeRequestStatus.ACCEPTED)
-                businessProfileAccess.updateBusinessProfile(changeRequest)
+                businessProfileChangeRequestAccess.updateStatus(userId, requestId, ChangeRequestStatus.ACCEPTED)
+                businessProfileAccess.createOrUpdateBusinessProfile(changeRequest)
                 return@doExclusively
             }
         }

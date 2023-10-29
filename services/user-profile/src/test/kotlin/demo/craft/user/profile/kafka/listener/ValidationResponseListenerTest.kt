@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_1
-import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
 import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_ACCEPTED_1
+import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
 import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_REJECTED_1
 import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_VALIDATION_RESPONSE_ACCEPTED_1
 import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_VALIDATION_RESPONSE_REJECTED_1
@@ -74,7 +74,7 @@ class ValidationResponseListenerTest {
             changeRequestProductStatusAccess.updateStatus(REQUEST_ID_1, PRODUCT_1, ChangeRequestStatus.ACCEPTED)
         } returns CHANGE_REQUEST_PRODUCT_STATUS_ACCEPTED_1
 
-        every { businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_1) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
+        every { businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_1) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
 
         every {
             changeRequestProductStatusAccess.findAllByRequestId(REQUEST_ID_1)
@@ -88,10 +88,10 @@ class ValidationResponseListenerTest {
         verify(exactly = 1) { changeRequestProductStatusAccess.findByRequestIdAndProduct(REQUEST_ID_1, PRODUCT_1) }
         verify(exactly = 1) { changeRequestProductStatusAccess.findAllByRequestId(REQUEST_ID_1) }
         verify(exactly = 1) { changeRequestProductStatusAccess.updateStatus(REQUEST_ID_1, PRODUCT_1, ChangeRequestStatus.ACCEPTED) }
-        verify(exactly = 1) { businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_1) }
+        verify(exactly = 1) { businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_1) }
         verify(exactly = 0) { changeRequestFailureReasonAccess.saveAllFailureReason(any(), any(), any()) }
         verify(exactly = 0) { businessProfileChangeRequestAccess.updateStatus(any(), any(), any()) }
-        verify(exactly = 0) { businessProfileAccess.updateBusinessProfile(any()) }
+        verify(exactly = 0) { businessProfileAccess.createOrUpdateBusinessProfile(any()) }
     }
 
     @Test
@@ -103,7 +103,7 @@ class ValidationResponseListenerTest {
             changeRequestProductStatusAccess.updateStatus(REQUEST_ID_1, PRODUCT_1, ChangeRequestStatus.ACCEPTED)
         } returns CHANGE_REQUEST_PRODUCT_STATUS_ACCEPTED_1
 
-        every { businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_1) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
+        every { businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_1) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
 
         every {
             changeRequestProductStatusAccess.findAllByRequestId(REQUEST_ID_1)
@@ -113,7 +113,7 @@ class ValidationResponseListenerTest {
             businessProfileChangeRequestAccess.updateStatus(USER_1, REQUEST_ID_1, ChangeRequestStatus.ACCEPTED)
         } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_ACCEPTED_1
 
-        every { businessProfileAccess.updateBusinessProfile(BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1) } returns BUSINESS_PROFILE_1
+        every { businessProfileAccess.createOrUpdateBusinessProfile(BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1) } returns BUSINESS_PROFILE_1
 
         // when
         val kafkaPayload = objectMapper.writeValueAsString(BUSINESS_PROFILE_VALIDATION_RESPONSE_ACCEPTED_1)
@@ -122,10 +122,10 @@ class ValidationResponseListenerTest {
         // then
         verify(exactly = 1) { changeRequestProductStatusAccess.findByRequestIdAndProduct(REQUEST_ID_1, PRODUCT_1) }
         verify(exactly = 1) { changeRequestProductStatusAccess.updateStatus(REQUEST_ID_1, PRODUCT_1, ChangeRequestStatus.ACCEPTED) }
-        verify(exactly = 1) { businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_1) }
+        verify(exactly = 1) { businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_1) }
         verify(exactly = 1) { changeRequestProductStatusAccess.findAllByRequestId(REQUEST_ID_1) }
         verify(exactly = 1) { businessProfileChangeRequestAccess.updateStatus(any(), any(), any()) }
-        verify(exactly = 1) { businessProfileAccess.updateBusinessProfile(any()) }
+        verify(exactly = 1) { businessProfileAccess.createOrUpdateBusinessProfile(any()) }
         verify(exactly = 0) { changeRequestFailureReasonAccess.saveAllFailureReason(any(), any(), any()) }
     }
 
@@ -142,7 +142,7 @@ class ValidationResponseListenerTest {
             changeRequestFailureReasonAccess.saveAllFailureReason(REQUEST_ID_1, PRODUCT_1, BUSINESS_PROFILE_VALIDATION_RESPONSE_REJECTED_FAILURE_REASON_1)
         } returns listOf(CHANGE_REQUEST_FAILURE_REASON_1)
 
-        every { businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_1) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
+        every { businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_1) } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
 
         every {
             changeRequestProductStatusAccess.findAllByRequestId(REQUEST_ID_1)
@@ -158,9 +158,9 @@ class ValidationResponseListenerTest {
         verify(exactly = 1) { changeRequestProductStatusAccess.findByRequestIdAndProduct(REQUEST_ID_1, PRODUCT_1) }
         verify(exactly = 1) { changeRequestProductStatusAccess.updateStatus(REQUEST_ID_1, PRODUCT_1, ChangeRequestStatus.REJECTED) }
         verify(exactly = 1) { changeRequestFailureReasonAccess.saveAllFailureReason(any(), any(), any()) }
-        verify(exactly = 1) { businessProfileChangeRequestAccess.findByRequestId(REQUEST_ID_1) }
+        verify(exactly = 1) { businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_1) }
         verify(exactly = 1) { changeRequestProductStatusAccess.findAllByRequestId(REQUEST_ID_1) }
         verify(exactly = 1) { businessProfileChangeRequestAccess.updateStatus(any(), any(), any()) }
-        verify(exactly = 0) { businessProfileAccess.updateBusinessProfile(any()) }
+        verify(exactly = 0) { businessProfileAccess.createOrUpdateBusinessProfile(any()) }
     }
 }

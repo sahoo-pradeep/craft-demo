@@ -1,7 +1,6 @@
 package demo.craft.user.profile.service
 
 import demo.craft.user.profile.common.exception.BusinessProfileChangeRequestNotFoundException
-import demo.craft.user.profile.common.exception.UnauthorizedUserException
 import demo.craft.user.profile.dao.access.BusinessProfileChangeRequestAccess
 import demo.craft.user.profile.dao.access.ChangeRequestFailureReasonAccess
 import demo.craft.user.profile.dao.access.ChangeRequestProductStatusAccess
@@ -20,14 +19,9 @@ class BusinessProfileChangeRequestService(
 ) {
 
     fun getBusinessProfileChangeRequest(userId: String, requestId: String): BusinessProfileChangeRequestWrapper {
-        val changeRequest = businessProfileChangeRequestAccess.findByRequestId(requestId)
-            ?: throw BusinessProfileChangeRequestNotFoundException(userId, requestId)
-
-        if (changeRequest.userId != userId) {
-            throw UnauthorizedUserException(userId)
-        }
-
-        return getChangeRequestStatusDetails(changeRequest)
+        return businessProfileChangeRequestAccess.findByUserIdAndRequestId(userId, requestId)?.let {
+            getChangeRequestStatusDetails(it)
+        } ?: throw BusinessProfileChangeRequestNotFoundException(userId, requestId)
     }
 
     fun getAllBusinessProfileChangeRequestWithFilters(

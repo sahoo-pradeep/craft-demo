@@ -1,12 +1,12 @@
 package demo.craft.product.subscription
 
 import demo.craft.product.subscription.common.config.ProductSubscriptionProperties
+import java.time.ZoneId
+import java.util.TimeZone
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import java.time.ZoneId
-import java.util.*
 
 @SpringBootApplication(
     scanBasePackages = [

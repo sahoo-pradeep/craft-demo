@@ -1,6 +1,5 @@
 package demo.craft.user.profile.dao.access
 
-import demo.craft.user.profile.common.exception.BusinessProfileAlreadyExistsException
 import demo.craft.user.profile.domain.entity.BusinessProfile
 import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
 
@@ -11,11 +10,6 @@ interface BusinessProfileAccess {
      */
     fun findByUserId(userId: String): BusinessProfile?
 
-    /**
-     * Creates a new business profile for the given user.
-     * If the business profile is already created, then it throws [BusinessProfileAlreadyExistsException]
-     */
-    fun createBusinessProfile(businessProfile: BusinessProfile): BusinessProfile
-
-    fun updateBusinessProfile(changeRequest: BusinessProfileChangeRequest): BusinessProfile
+    /** Create a new business profile or updates it if it already exists  */
+    fun createOrUpdateBusinessProfile(changeRequest: BusinessProfileChangeRequest): BusinessProfile
 }

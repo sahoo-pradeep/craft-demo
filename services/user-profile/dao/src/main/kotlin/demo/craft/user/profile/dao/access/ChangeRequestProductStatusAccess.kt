@@ -1,18 +1,22 @@
 package demo.craft.user.profile.dao.access
 
 import demo.craft.common.domain.enums.Product
+import demo.craft.user.profile.common.exception.ProductStatusIllegalStateException
 import demo.craft.user.profile.domain.entity.ChangeRequestProductStatus
 import demo.craft.user.profile.domain.enums.ChangeRequestStatus
 
 interface ChangeRequestProductStatusAccess {
-    /** Get change request product status by [requestId] */
+    /** Get all product status by [requestId] */
     fun findAllByRequestId(requestId: String): List<ChangeRequestProductStatus>
 
-    fun existsByRequestId(requestId: String): Boolean
-
+    /** Get product status by [requestId] and [product] */
     fun findByRequestIdAndProduct(requestId: String, product: Product): ChangeRequestProductStatus?
 
-    fun createNewEntries(entities: List<ChangeRequestProductStatus>): List<ChangeRequestProductStatus>
+    /** Creates new product statuses */
+    fun createNewProductStatuses(productStatuses: List<ChangeRequestProductStatus>): List<ChangeRequestProductStatus>
 
+    /** Update product status for given [requestId] and [product] to [status]
+     * @throws [ProductStatusIllegalStateException] if status update is not allowed
+     */
     fun updateStatus(requestId: String, product: Product, status: ChangeRequestStatus): ChangeRequestProductStatus
 }

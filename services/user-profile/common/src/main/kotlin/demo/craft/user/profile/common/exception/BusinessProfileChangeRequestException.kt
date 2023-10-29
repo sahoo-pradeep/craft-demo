@@ -17,3 +17,13 @@ class BusinessProfileChangeRequestNotFoundException(userId: String, requestId: S
         reason = "notFound",
         message = "Business profile change request not found with userId: $userId and requestId: $requestId"
     )
+
+class BusinessProfileChangeRequestIllegalStateException(
+    userId: String,
+    requestId: String,
+    currentStatus: String,
+    updateStatus: String
+) : UserProfileException(
+    reason = "invalidParameter",
+    message = "Illegal status update of change request from $currentStatus to $updateStatus. userId: $userId, requestId: $requestId"
+)

@@ -3,7 +3,11 @@ package demo.craft.product.subscription.controller
 import demo.craft.product.subscription.api.ProductSubscriptionApi
 import demo.craft.product.subscription.mapper.toApiModel
 import demo.craft.product.subscription.mapper.toDomainModel
-import demo.craft.product.subscription.model.*
+import demo.craft.product.subscription.model.GetAllProductSubscriptionsResponse
+import demo.craft.product.subscription.model.SaveProductSubscriptionRequest
+import demo.craft.product.subscription.model.SaveProductSubscriptionResponse
+import demo.craft.product.subscription.model.UpdateProductSubscriptionRequest
+import demo.craft.product.subscription.model.UpdateProductSubscriptionResponse
 import demo.craft.product.subscription.service.ProductSubscriptionService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController

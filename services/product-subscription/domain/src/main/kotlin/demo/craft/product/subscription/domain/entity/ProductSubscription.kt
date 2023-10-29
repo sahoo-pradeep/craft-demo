@@ -2,10 +2,10 @@ package demo.craft.product.subscription.domain.entity
 
 import demo.craft.common.domain.enums.Product
 import demo.craft.product.subscription.domain.enums.ProductSubscriptionStatus
-import org.hibernate.annotations.CreationTimestamp
-import org.hibernate.annotations.UpdateTimestamp
 import java.time.LocalDateTime
 import javax.persistence.*
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
 
 @Entity
 data class ProductSubscription(

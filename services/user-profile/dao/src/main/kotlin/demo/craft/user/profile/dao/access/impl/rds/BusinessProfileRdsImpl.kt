@@ -23,14 +23,30 @@ internal class BusinessProfileRdsImpl(
         businessProfileRepository.findByUserId(userId)
 
     @Transactional
-    override fun createBusinessProfile(businessProfile: BusinessProfile): BusinessProfile {
+    override fun createOrUpdateBusinessProfile(changeRequest: BusinessProfileChangeRequest): BusinessProfile =
+        findByUserId(changeRequest.userId)?.let {
+            val updatedBusinessProfile = getUpdatedBusinessProfile(it, changeRequest)
+            val persistedBusinessAddress = saveNewAddress(updatedBusinessProfile.businessAddress)
+            val persistedLegalAddress = saveNewAddress(updatedBusinessProfile.legalAddress)
+
+            businessProfileRepository.saveAndFlush(
+                updatedBusinessProfile.copy(
+                    businessAddress = persistedBusinessAddress,
+                    legalAddress = persistedLegalAddress,
+                )
+            ).also {
+                log.info { "Business profile is updated successfully for userId ${changeRequest.userId}" }
+            }
+        } ?: createBusinessProfile(changeRequest.toBusinessProfile())
+
+    private fun createBusinessProfile(businessProfile: BusinessProfile): BusinessProfile {
         findByUserId(businessProfile.userId)?.let {
             throw BusinessProfileAlreadyExistsException(businessProfile.userId)
         }
 
-        val persistedBusinessAddress = addressRepository.save(createNewAddress(businessProfile.businessAddress))
-        val persistedLegalAddress = addressRepository.save(createNewAddress(businessProfile.legalAddress))
-        return businessProfileRepository.save(
+        val persistedBusinessAddress = addressRepository.saveAndFlush(cloneNewAddress(businessProfile.businessAddress))
+        val persistedLegalAddress = addressRepository.saveAndFlush(cloneNewAddress(businessProfile.legalAddress))
+        return businessProfileRepository.saveAndFlush(
             businessProfile.copy(
                 id = null, // to create a new entry
                 businessAddress = persistedBusinessAddress,
@@ -41,33 +57,7 @@ internal class BusinessProfileRdsImpl(
         }
     }
 
-    @Transactional
-    override fun updateBusinessProfile(changeRequest: BusinessProfileChangeRequest): BusinessProfile =
-        findByUserId(changeRequest.userId)?.let {
-            val updatedBusinessProfile = updateFields(it, changeRequest)
-            val persistedBusinessAddress = if (updatedBusinessProfile.businessAddress.id == null) {
-                addressRepository.save(updatedBusinessProfile.businessAddress)
-            } else {
-                updatedBusinessProfile.businessAddress
-            }
-
-            val persistedLegalAddress = if (updatedBusinessProfile.legalAddress.id == null) {
-                addressRepository.save(updatedBusinessProfile.legalAddress)
-            } else {
-                updatedBusinessProfile.legalAddress
-            }
-
-            businessProfileRepository.save(
-                updatedBusinessProfile.copy(
-                    businessAddress = persistedBusinessAddress,
-                    legalAddress = persistedLegalAddress,
-                )
-            ).also {
-                log.info { "Business profile is updated successfully for userId ${changeRequest.userId}" }
-            }
-        } ?: createBusinessProfile(changeRequest.toBusinessProfile())
-
-    private fun updateFields(
+    private fun getUpdatedBusinessProfile(
         currentBusinessProfile: BusinessProfile,
         changeRequest: BusinessProfileChangeRequest
     ): BusinessProfile =
@@ -82,17 +72,23 @@ internal class BusinessProfileRdsImpl(
             businessAddress = if (currentBusinessProfile.businessAddress == changeRequest.businessAddress) {
                 currentBusinessProfile.businessAddress
             } else {
-                createNewAddress(changeRequest.businessAddress)
+                cloneNewAddress(changeRequest.businessAddress)
             },
 
             legalAddress = if (currentBusinessProfile.legalAddress == changeRequest.legalAddress) {
                 currentBusinessProfile.legalAddress
             } else {
-                createNewAddress(changeRequest.legalAddress)
+                cloneNewAddress(changeRequest.legalAddress)
             }
         )
 
     // to ensure there is no association with previously stored address
-    private fun createNewAddress(inputAddress: Address): Address =
+    private fun cloneNewAddress(inputAddress: Address): Address =
         inputAddress.copy(id = null)
+
+    // id is null when the address is not saved already
+    private fun saveNewAddress(businessAddress: Address): Address =
+        businessAddress.id?.let {
+            addressRepository.saveAndFlush(businessAddress)
+        } ?: businessAddress
 }

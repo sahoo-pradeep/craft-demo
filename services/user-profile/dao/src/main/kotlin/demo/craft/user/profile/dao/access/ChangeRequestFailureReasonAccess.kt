@@ -5,9 +5,10 @@ import demo.craft.user.profile.domain.entity.ChangeRequestFailureReason
 import demo.craft.user.profile.domain.enums.FieldName
 
 interface ChangeRequestFailureReasonAccess {
-    /** Get change request failure reasons by [requestId] */
+    /** Get all failure reasons by [requestId] */
     fun findAllByRequestId(requestId: String): List<ChangeRequestFailureReason>
 
+    /** save all failure reasons for given [requestId] amd [product] */
     fun saveAllFailureReason(
         requestId: String,
         product: Product,

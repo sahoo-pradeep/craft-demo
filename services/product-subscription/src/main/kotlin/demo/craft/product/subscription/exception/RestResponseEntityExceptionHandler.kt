@@ -2,6 +2,7 @@ package demo.craft.product.subscription.exception
 
 import demo.craft.product.subscription.common.exception.ProductSubscriptionAlreadyExistsException
 import demo.craft.product.subscription.common.exception.ProductSubscriptionNotFoundException
+import kotlin.reflect.KClass
 import mu.KotlinLogging
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
-import kotlin.reflect.KClass
 
 @ControllerAdvice
 class RestResponseEntityExceptionHandler(
