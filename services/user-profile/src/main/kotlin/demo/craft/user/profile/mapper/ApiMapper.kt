@@ -3,11 +3,12 @@ package demo.craft.user.profile.mapper
 import demo.craft.common.domain.enums.Product
 import demo.craft.user.profile.domain.entity.Address
 import demo.craft.user.profile.domain.entity.BusinessProfile
+import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
 import demo.craft.user.profile.domain.entity.ChangeRequestFailureReason
 import demo.craft.user.profile.domain.enums.ChangeRequestOperation
 import demo.craft.user.profile.domain.enums.ChangeRequestStatus
 import demo.craft.user.profile.domain.enums.FieldName
-import demo.craft.user.profile.domain.model.BusinessProfileChangeRequestWrapper
+import demo.craft.user.profile.domain.enums.SortOrder
 import demo.craft.user.profile.domain.model.ChangeRequestProductStatusWrapper
 
 fun BusinessProfile.toApiModel(): demo.craft.user.profile.model.BusinessProfile =
@@ -61,12 +62,18 @@ fun demo.craft.user.profile.model.Address.toDomainModel(userId: String): Address
 fun List<Pair<FieldName, String>>.toKeyValueString() =
     this.joinToString(",", "[", "]") { "{field = ${it.first}, reason = '${it.second}'}" }
 
-fun BusinessProfileChangeRequestWrapper.toApiModel(): demo.craft.user.profile.model.BusinessProfileChangeRequestStatus =
+fun BusinessProfileChangeRequest.toApiModel(): demo.craft.user.profile.model.BusinessProfileChangeRequestStatus =
     demo.craft.user.profile.model.BusinessProfileChangeRequestStatus(
-        requestId = this.changeRequest.requestId,
-        operation = this.changeRequest.operation.toApiModel(),
-        status = this.changeRequest.status.toApiModel(),
-        productStatus = this.productStatuses.map { it.toApiModel() }
+        requestId = this.requestId,
+        operation = this.operation.toApiModel(),
+        status = this.status.toApiModel()
+    )
+
+fun ChangeRequestProductStatusWrapper.toApiModel(): demo.craft.user.profile.model.ChangeRequestProductStatus =
+    demo.craft.user.profile.model.ChangeRequestProductStatus(
+        product = this.productStatus.product.toApiModel(),
+        status = this.productStatus.status.toApiModel(),
+        failureReasons = this.failureReasons.map { it.toApiModel() }
     )
 
 fun ChangeRequestOperation.toApiModel(): demo.craft.user.profile.model.ChangeRequestOperation =
@@ -75,15 +82,14 @@ fun ChangeRequestOperation.toApiModel(): demo.craft.user.profile.model.ChangeReq
 private fun ChangeRequestStatus.toApiModel(): demo.craft.user.profile.model.ChangeRequestStatus =
     demo.craft.user.profile.model.ChangeRequestStatus.valueOf(this.name)
 
-private fun ChangeRequestProductStatusWrapper.toApiModel(): demo.craft.user.profile.model.ChangeRequestProductStatus =
-    demo.craft.user.profile.model.ChangeRequestProductStatus(
-        product = this.productStatus.product.toApiModel(),
-        status = this.productStatus.status.toApiModel(),
-        failureReasons = this.failureReasons.map { it.toApiModel() }
-    )
+fun demo.craft.user.profile.model.ChangeRequestStatus.toDomainModel(): ChangeRequestStatus =
+    ChangeRequestStatus.valueOf(this.name)
 
 private fun Product.toApiModel(): demo.craft.user.profile.model.Product =
     demo.craft.user.profile.model.Product.valueOf(this.name)
+
+fun demo.craft.user.profile.model.SortOrder.toDomain(): SortOrder =
+    SortOrder.valueOf(this.name)
 
 private fun ChangeRequestFailureReason.toApiModel(): demo.craft.user.profile.model.ProductFailureReason =
     demo.craft.user.profile.model.ProductFailureReason(

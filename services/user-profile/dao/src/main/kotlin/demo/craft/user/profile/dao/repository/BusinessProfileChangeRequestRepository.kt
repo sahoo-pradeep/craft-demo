@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 internal interface BusinessProfileChangeRequestRepository : JpaRepository<BusinessProfileChangeRequest, Long> {
-    fun findAllByUserId(userId: String): List<BusinessProfileChangeRequest>
+    fun findAllByUserIdOrderByIdAsc(userId: String): List<BusinessProfileChangeRequest>
     fun findByRequestId(requestId: String): BusinessProfileChangeRequest?
     fun findTopByUserIdOrderByCreatedAtDesc(userId: String): BusinessProfileChangeRequest?
     fun findAllByUserIdAndStatus(userId: String, status: ChangeRequestStatus): List<BusinessProfileChangeRequest>

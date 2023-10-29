@@ -15,11 +15,8 @@ internal class BusinessProfileChangeRequestRdsImpl(
     private val businessProfileChangeRequestRepository: BusinessProfileChangeRequestRepository,
     private val addressRepository: AddressRepository,
 ) : BusinessProfileChangeRequestAccess {
-    override fun findByUserIdAndStatus(
-        userId: String, status: ChangeRequestStatus?
-    ): List<BusinessProfileChangeRequest> =
-        status?.let { businessProfileChangeRequestRepository.findAllByUserIdAndStatus(userId, it) }
-            ?: businessProfileChangeRequestRepository.findAllByUserId(userId)
+    override fun findAllByUserId(userId: String): List<BusinessProfileChangeRequest> =
+        businessProfileChangeRequestRepository.findAllByUserIdOrderByIdAsc(userId)
 
     override fun findByRequestId(requestId: String): BusinessProfileChangeRequest? =
         businessProfileChangeRequestRepository.findByRequestId(requestId)
@@ -31,7 +28,7 @@ internal class BusinessProfileChangeRequestRdsImpl(
     override fun createChangeRequest(
         businessProfileChangeRequest: BusinessProfileChangeRequest
     ): BusinessProfileChangeRequest {
-        if (findByUserIdAndStatus(businessProfileChangeRequest.userId, ChangeRequestStatus.IN_PROGRESS).isNotEmpty()) {
+        if (findAllByUserId(businessProfileChangeRequest.userId).any { it.status == ChangeRequestStatus.IN_PROGRESS }) {
             throw BusinessProfileUpdateAlreadyInProgressException(businessProfileChangeRequest.userId)
         }
 

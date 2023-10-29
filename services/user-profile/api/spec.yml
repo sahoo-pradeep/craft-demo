@@ -67,38 +67,42 @@ paths:
               schema:
                 $ref: "#/components/schemas/UpdateBusinessProfileResponse"
 
-  /user-profile/v1/business-profile/change-request/status:
+  /user-profile/v1/business-profile/change-request/details:
     get:
       tags:
         - business-profile-change-request
-      operationId: getBusinessProfileChangeRequestStatus
-      summary: Get business profile change request status
+      operationId: getBusinessProfileChangeRequestDetails
+      summary: Get business profile change request details
       parameters:
         - $ref: "#/components/parameters/userId"
         - $ref: "#/components/parameters/requestId"
       responses:
         "200":
-          description: Business profile change request status
+          description: Business profile change request details
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetBusinessProfileChangeRequestStatusResponse"
+                $ref: "#/components/schemas/GetBusinessProfileChangeRequestDetailsResponse"
 
-  /user-profile/v1/business-profile/change-request/latest-status:
+  /user-profile/v1/business-profile/change-request/filter:
     get:
       tags:
         - business-profile-change-request
-      operationId: getBusinessProfileChangeRequestLatestStatus
-      summary: Get business profile change request status
+      operationId: getAllBusinessProfileChangeRequest
+      summary: Get all business profile change request with filters
       parameters:
         - $ref: "#/components/parameters/userId"
+        - $ref: "#/components/parameters/statusFilter"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/sort"
       responses:
         "200":
-          description: Business profile change request latest status
+          description: Business profile change requests with applied filters
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetBusinessProfileChangeRequestLatestStatusResponse"
+                $ref: "#/components/schemas/GetAllBusinessProfileChangeRequestWithFiltersResponse"
 
 components:
   parameters:
@@ -116,7 +120,43 @@ components:
       schema:
         type: string
 
+    statusFilter:
+      in: query
+      name: status
+      required: false
+      schema:
+        $ref: "#/components/schemas/ChangeRequestStatus"
+
+    page:
+      in: query
+      name: page
+      required: true
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 10000
+
+    pageSize:
+      in: query
+      name: size
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+
+    sort:
+      in: query
+      name: sort
+      required: true
+      schema:
+        $ref: "#/components/schemas/SortOrder"
+
   schemas:
+    SortOrder:
+      type: string
+      enum: [ ASC, DESC ]
+
     BusinessProfile:
       type: object
       required:
@@ -245,21 +285,28 @@ components:
         requestUuid:
           type: string
 
-    GetBusinessProfileChangeRequestStatusResponse:
+    GetBusinessProfileChangeRequestDetailsResponse:
       type: object
       required:
         - changeRequestStatus
+        - productStatuses
       properties:
         changeRequestStatus:
           $ref: "#/components/schemas/BusinessProfileChangeRequestStatus"
+        productStatuses:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChangeRequestProductStatus"
 
-    GetBusinessProfileChangeRequestLatestStatusResponse:
+    GetAllBusinessProfileChangeRequestWithFiltersResponse:
       type: object
       required:
         - changeRequestStatus
       properties:
-        changeRequestStatus:
-          $ref: "#/components/schemas/BusinessProfileChangeRequestStatus"
+        changeRequestStatuses:
+          type: array
+          items:
+            $ref: "#/components/schemas/BusinessProfileChangeRequestStatus"
 
     BusinessProfileChangeRequestStatus:
       type: object
@@ -267,7 +314,6 @@ components:
         - requestId
         - operation
         - status
-        - productStatus
       properties:
         requestId:
           type: string
@@ -275,10 +321,6 @@ components:
           $ref: "#/components/schemas/ChangeRequestOperation"
         status:
           $ref: '#/components/schemas/ChangeRequestStatus'
-        productStatus:
-          type: array
-          items:
-            $ref: '#/components/schemas/ChangeRequestProductStatus'
 
     ChangeRequestProductStatus:
       type: object

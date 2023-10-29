@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter
 object TestConstant {
     const val REQUEST_ID_1 = "00000000-0000-0000-0000-000000000001"
     const val REQUEST_ID_2 = "00000000-0000-0000-0000-000000000002"
+    const val REQUEST_ID_3 = "00000000-0000-0000-0000-000000000003"
     const val USER_1 = "USER001"
     const val USER_2 = "USER002"
     const val COMPANY_NAME_1 = "COMPANY 1"
@@ -28,7 +29,9 @@ object TestConstant {
     const val WEBSITE_1 = "www.craft.demo"
     const val PAN_FAILURE_REASON = "invalid pan"
     const val EIN_FAILURE_REASON = "invalid ein"
-    val DATE_TIME_1 = LocalDateTime.parse("2023-10-20T00:00:00", DateTimeFormatter.ISO_DATE_TIME)
+    val DATE_TIME_1 = LocalDateTime.parse("2023-10-01T00:00:00", DateTimeFormatter.ISO_DATE_TIME)
+    val DATE_TIME_2 = LocalDateTime.parse("2023-10-02T00:00:00", DateTimeFormatter.ISO_DATE_TIME)
+    val DATE_TIME_3 = LocalDateTime.parse("2023-10-03T00:00:00", DateTimeFormatter.ISO_DATE_TIME)
     val PRODUCT_1 = Product.QUICKBOOKS_ACCOUNTING
     val PRODUCT_2 = Product.QUICKBOOKS_PAYROLL
 
@@ -115,11 +118,29 @@ object TestConstant {
         updatedAt = DATE_TIME_1
     )
 
-    val BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_2 = BusinessProfileChangeRequest(
+    val BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_ACCEPTED_2 = BusinessProfileChangeRequest(
         id = 2,
         requestId = REQUEST_ID_2,
         userId = USER_1,
-        operation = ChangeRequestOperation.CREATE,
+        operation = ChangeRequestOperation.UPDATE,
+        status = ChangeRequestStatus.ACCEPTED,
+        companyName = COMPANY_NAME_1,
+        legalName = LEGAL_NAME_1,
+        pan = PAN_1,
+        ein = EIN_1,
+        email = EMAIL_1,
+        website = WEBSITE_1,
+        businessAddress = ADDRESS_1,
+        legalAddress = ADDRESS_1,
+        createdAt = DATE_TIME_2,
+        updatedAt = DATE_TIME_2
+    )
+
+    val BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_REJECTED_2 = BusinessProfileChangeRequest(
+        id = 2,
+        requestId = REQUEST_ID_2,
+        userId = USER_1,
+        operation = ChangeRequestOperation.UPDATE,
         status = ChangeRequestStatus.REJECTED,
         companyName = COMPANY_NAME_1,
         legalName = LEGAL_NAME_1,
@@ -129,8 +150,44 @@ object TestConstant {
         website = WEBSITE_1,
         businessAddress = ADDRESS_1,
         legalAddress = ADDRESS_1,
-        createdAt = DATE_TIME_1,
-        updatedAt = DATE_TIME_1
+        createdAt = DATE_TIME_2,
+        updatedAt = DATE_TIME_2
+    )
+
+    val BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_2 = BusinessProfileChangeRequest(
+        id = 2,
+        requestId = REQUEST_ID_2,
+        userId = USER_1,
+        operation = ChangeRequestOperation.UPDATE,
+        status = ChangeRequestStatus.IN_PROGRESS,
+        companyName = COMPANY_NAME_1,
+        legalName = LEGAL_NAME_1,
+        pan = PAN_1,
+        ein = EIN_1,
+        email = EMAIL_1,
+        website = WEBSITE_1,
+        businessAddress = ADDRESS_1,
+        legalAddress = ADDRESS_1,
+        createdAt = DATE_TIME_2,
+        updatedAt = DATE_TIME_2
+    )
+
+    val BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_ACCEPTED_3 = BusinessProfileChangeRequest(
+        id = 3,
+        requestId = REQUEST_ID_3,
+        userId = USER_1,
+        operation = ChangeRequestOperation.UPDATE,
+        status = ChangeRequestStatus.ACCEPTED,
+        companyName = COMPANY_NAME_1,
+        legalName = LEGAL_NAME_1,
+        pan = PAN_1,
+        ein = EIN_1,
+        email = EMAIL_1,
+        website = WEBSITE_1,
+        businessAddress = ADDRESS_1,
+        legalAddress = ADDRESS_1,
+        createdAt = DATE_TIME_3,
+        updatedAt = DATE_TIME_3
     )
 
     val CHANGE_REQUEST_PRODUCT_STATUS_IN_PROGRESS_1 = ChangeRequestProductStatus(

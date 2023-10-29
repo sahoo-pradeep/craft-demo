@@ -5,11 +5,8 @@ import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
 import demo.craft.user.profile.domain.enums.ChangeRequestStatus
 
 interface BusinessProfileChangeRequestAccess {
-    /**
-     * Get all change requests for the given [userId] filtered by [status].
-     * If status is null, then status filter is not applied
-     */
-    fun findByUserIdAndStatus(userId: String, status: ChangeRequestStatus? = null): List<BusinessProfileChangeRequest>
+    /** Get all change requests for the given [userId] */
+    fun findAllByUserId(userId: String): List<BusinessProfileChangeRequest>
 
     /** Get change request by [requestId] */
     fun findByRequestId(requestId: String): BusinessProfileChangeRequest?

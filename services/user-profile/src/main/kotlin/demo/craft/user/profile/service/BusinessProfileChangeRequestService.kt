@@ -6,6 +6,8 @@ import demo.craft.user.profile.dao.access.BusinessProfileChangeRequestAccess
 import demo.craft.user.profile.dao.access.ChangeRequestFailureReasonAccess
 import demo.craft.user.profile.dao.access.ChangeRequestProductStatusAccess
 import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
+import demo.craft.user.profile.domain.enums.ChangeRequestStatus
+import demo.craft.user.profile.domain.enums.SortOrder
 import demo.craft.user.profile.domain.model.BusinessProfileChangeRequestWrapper
 import demo.craft.user.profile.domain.model.ChangeRequestProductStatusWrapper
 import org.springframework.stereotype.Service
@@ -18,22 +20,38 @@ class BusinessProfileChangeRequestService(
 ) {
 
     fun getBusinessProfileChangeRequest(userId: String, requestId: String): BusinessProfileChangeRequestWrapper {
-        return businessProfileChangeRequestAccess.findByRequestId(requestId)?.let {
-            if (it.userId != userId) {
-                throw UnauthorizedUserException(userId)
-            } else {
-                getCompleteChangeRequestStatus(it)
-            }
-        } ?: throw BusinessProfileChangeRequestNotFoundException(userId, requestId)
+        val changeRequest = businessProfileChangeRequestAccess.findByRequestId(requestId)
+            ?: throw BusinessProfileChangeRequestNotFoundException(userId, requestId)
+
+        if (changeRequest.userId != userId) {
+            throw UnauthorizedUserException(userId)
+        }
+
+        return getChangeRequestStatusDetails(changeRequest)
     }
 
-    fun getLatestBusinessProfileChangeRequest(userId: String): BusinessProfileChangeRequestWrapper {
-        return businessProfileChangeRequestAccess.findTopChangeRequest(userId)?.let {
-            getCompleteChangeRequestStatus(it)
-        } ?: throw BusinessProfileChangeRequestNotFoundException(userId, null)
+    fun getAllBusinessProfileChangeRequestWithFilters(
+        userId: String,
+        status: ChangeRequestStatus?,
+        page: Int,
+        pageSize: Int,
+        sortOrder: SortOrder
+    ): List<BusinessProfileChangeRequest> {
+        // add filters only if filters are not null
+        val changeRequests = businessProfileChangeRequestAccess.findAllByUserId(userId)
+
+        val sortedChangeRequests = when (sortOrder) {
+            SortOrder.ASC -> changeRequests.sortedBy { it.id }
+            SortOrder.DESC -> changeRequests.sortedByDescending { it.id }
+        }
+
+        return sortedChangeRequests
+            .filter { changeRequest -> status?.let { changeRequest.status == it } ?: true }
+            .drop(page * pageSize)
+            .take(pageSize)
     }
 
-    private fun getCompleteChangeRequestStatus(
+    private fun getChangeRequestStatusDetails(
         changeRequest: BusinessProfileChangeRequest
     ): BusinessProfileChangeRequestWrapper {
         val productStatuses = changeRequestProductStatusAccess.findAllByRequestId(changeRequest.requestId)
