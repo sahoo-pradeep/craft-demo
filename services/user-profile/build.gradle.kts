@@ -15,10 +15,11 @@ dependencies {
     implementation(project(":services:user-profile:integration"))
 
     // internal libs
-    implementation("demo.craft:common-communication:0.0.4-SNAPSHOT")
-    implementation("demo.craft:common-domain:0.0.4-SNAPSHOT")
-    implementation("demo.craft:common-lock:0.0.4-SNAPSHOT")
-    implementation("demo.craft:product-subscription-client:0.0.4-SNAPSHOT")
+    implementation("demo.craft:common-communication:0.0.5-SNAPSHOT")
+    implementation("demo.craft:common-domain:0.0.5-SNAPSHOT")
+    implementation("demo.craft:common-lock:0.0.5-SNAPSHOT")
+    implementation("demo.craft:common-cache:0.0.5-SNAPSHOT")
+    implementation("demo.craft:product-subscription-client:0.0.5-SNAPSHOT")
 
     // external libs
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

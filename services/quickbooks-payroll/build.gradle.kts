@@ -8,9 +8,9 @@ plugins {
 dependencies {
 
     // internal libs
-    implementation("demo.craft:common-communication:0.0.4-SNAPSHOT")
-    implementation("demo.craft:common-domain:0.0.4-SNAPSHOT")
-    implementation("demo.craft:user-profile-domain:0.0.4-SNAPSHOT")
+    implementation("demo.craft:common-communication:0.0.5-SNAPSHOT")
+    implementation("demo.craft:common-domain:0.0.5-SNAPSHOT")
+    implementation("demo.craft:user-profile-domain:0.0.5-SNAPSHOT")
 
     // external libs
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

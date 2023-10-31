@@ -22,19 +22,6 @@ fun BusinessProfile.toChangeRequest(requestId: String, operation: ChangeRequestO
         status = ChangeRequestStatus.init()
     )
 
-fun BusinessProfileChangeRequest.toBusinessProfile(): BusinessProfile =
-    BusinessProfile(
-        userId = this.userId,
-        companyName = this.companyName,
-        legalName = this.legalName,
-        businessAddress = this.businessAddress,
-        legalAddress = this.legalAddress,
-        pan = this.pan,
-        ein = this.ein,
-        email = this.email,
-        website = this.website,
-    )
-
 fun BusinessProfileChangeRequest.toKafkaPayload(): BusinessProfileChangeRequestKafkaPayload =
     BusinessProfileChangeRequestKafkaPayload(
         userId = this.userId,

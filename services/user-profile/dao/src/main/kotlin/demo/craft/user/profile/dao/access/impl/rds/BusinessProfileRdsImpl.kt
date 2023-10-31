@@ -1,13 +1,13 @@
 package demo.craft.user.profile.dao.access.impl.rds
 
-import demo.craft.user.profile.common.exception.BusinessProfileAlreadyExistsException
+import com.fasterxml.jackson.core.type.TypeReference
 import demo.craft.user.profile.dao.access.BusinessProfileAccess
+import demo.craft.user.profile.dao.access.cache.GenericCacheManager
 import demo.craft.user.profile.dao.repository.AddressRepository
 import demo.craft.user.profile.dao.repository.BusinessProfileRepository
 import demo.craft.user.profile.domain.entity.Address
 import demo.craft.user.profile.domain.entity.BusinessProfile
 import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
-import demo.craft.user.profile.domain.mapper.toBusinessProfile
 import javax.transaction.Transactional
 import mu.KotlinLogging
 import org.springframework.stereotype.Component
@@ -16,44 +16,35 @@ import org.springframework.stereotype.Component
 internal class BusinessProfileRdsImpl(
     private val businessProfileRepository: BusinessProfileRepository,
     private val addressRepository: AddressRepository,
+    private val genericCacheManager: GenericCacheManager
 ) : BusinessProfileAccess {
     private val log = KotlinLogging.logger {}
 
     override fun findByUserId(userId: String): BusinessProfile? =
-        businessProfileRepository.findByUserId(userId)
-
-    @Transactional
-    override fun createOrUpdateBusinessProfile(changeRequest: BusinessProfileChangeRequest): BusinessProfile =
-        findByUserId(changeRequest.userId)?.let {
-            val updatedBusinessProfile = getUpdatedBusinessProfile(it, changeRequest)
-            val persistedBusinessAddress = saveNewAddress(updatedBusinessProfile.businessAddress)
-            val persistedLegalAddress = saveNewAddress(updatedBusinessProfile.legalAddress)
-
-            businessProfileRepository.saveAndFlush(
-                updatedBusinessProfile.copy(
-                    businessAddress = persistedBusinessAddress,
-                    legalAddress = persistedLegalAddress,
-                )
-            ).also {
-                log.info { "Business profile is updated successfully for userId ${changeRequest.userId}" }
-            }
-        } ?: createBusinessProfile(changeRequest.toBusinessProfile())
-
-    private fun createBusinessProfile(businessProfile: BusinessProfile): BusinessProfile {
-        findByUserId(businessProfile.userId)?.let {
-            throw BusinessProfileAlreadyExistsException(businessProfile.userId)
+        genericCacheManager.cacheLookupForNullable(
+            getCacheKey(userId),
+            object : TypeReference<BusinessProfile>(){}
+        ) {
+            businessProfileRepository.findByUserId(userId)
         }
 
-        val persistedBusinessAddress = addressRepository.saveAndFlush(cloneNewAddress(businessProfile.businessAddress))
-        val persistedLegalAddress = addressRepository.saveAndFlush(cloneNewAddress(businessProfile.legalAddress))
+    @Transactional
+    override fun createOrUpdateBusinessProfile(changeRequest: BusinessProfileChangeRequest): BusinessProfile {
+        val businessProfile = findByUserId(changeRequest.userId)?.let {
+            getUpdatedBusinessProfile(it, changeRequest)
+        } ?: changeRequest.toNewBusinessProfile()
+
+        val persistedBusinessAddress = saveNewAddress(businessProfile.businessAddress)
+        val persistedLegalAddress = saveNewAddress(businessProfile.legalAddress)
+
         return businessProfileRepository.saveAndFlush(
             businessProfile.copy(
-                id = null, // to create a new entry
                 businessAddress = persistedBusinessAddress,
                 legalAddress = persistedLegalAddress,
             )
         ).also {
-            log.info { "Business profile is created successfully for userId ${businessProfile.userId}" }
+            log.info { "Business profile is created/updated successfully for userId ${changeRequest.userId}" }
+            genericCacheManager.cacheUpdate(getCacheKey(it.userId), object : TypeReference<BusinessProfile>() {}, it)
         }
     }
 
@@ -82,6 +73,19 @@ internal class BusinessProfileRdsImpl(
             }
         )
 
+    private fun BusinessProfileChangeRequest.toNewBusinessProfile(): BusinessProfile =
+        BusinessProfile(
+            userId = this.userId,
+            companyName = this.companyName,
+            legalName = this.legalName,
+            businessAddress = cloneNewAddress(this.businessAddress),
+            legalAddress = cloneNewAddress(this.legalAddress),
+            pan = this.pan,
+            ein = this.ein,
+            email = this.email,
+            website = this.website,
+        )
+
     // to ensure there is no association with previously stored address
     private fun cloneNewAddress(inputAddress: Address): Address =
         inputAddress.copy(id = null)
@@ -91,4 +95,6 @@ internal class BusinessProfileRdsImpl(
         businessAddress.id?.let {
             addressRepository.saveAndFlush(businessAddress)
         } ?: businessAddress
+
+    private fun getCacheKey(userId: String) = "BusinessProfile_$userId"
 }

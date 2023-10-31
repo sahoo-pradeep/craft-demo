@@ -10,13 +10,14 @@ dependencies {
     implementation(project(":services:user-profile:domain"))
 
     // internal libs
-    implementation("demo.craft:common-domain:0.0.4-SNAPSHOT")
+    implementation("demo.craft:common-domain:0.0.5-SNAPSHOT")
+    implementation("demo.craft:common-cache:0.0.5-SNAPSHOT")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.postgresql:postgresql") // postgres database
     implementation("org.flywaydb:flyway-core:6.5.2") // db migration
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0") // jackson
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.11.0") // jackson for kotlin
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.2")
     implementation("io.github.microutils:kotlin-logging:1.7.9") // logging
     implementation("org.jetbrains.kotlin:kotlin-reflect")

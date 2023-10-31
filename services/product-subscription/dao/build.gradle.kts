@@ -9,7 +9,7 @@ dependencies {
     implementation(project(":services:product-subscription:common"))
     implementation(project(":services:product-subscription:domain"))
 
-    implementation("demo.craft:common-domain:0.0.4-SNAPSHOT")
+    implementation("demo.craft:common-domain:0.0.5-SNAPSHOT")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")

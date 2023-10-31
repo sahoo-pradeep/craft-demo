@@ -63,11 +63,8 @@ class BusinessProfileServiceTest {
         //given
         every { businessProfileAccess.findByUserId(USER_1) } returns null
 
-        //when
-        val exception = assertThrows<Exception> { businessProfileService.getBusinessProfile(USER_1) }
-
         //then
-        assertEquals(BusinessProfileNotFoundException::class, exception::class)
+        assertThrows<BusinessProfileNotFoundException> { businessProfileService.getBusinessProfile(USER_1) }
         verify(exactly = 1) { businessProfileAccess.findByUserId(USER_1) }
     }
 
@@ -96,11 +93,9 @@ class BusinessProfileServiceTest {
             companyName = "",
             pan = "1234567890"
         )
-        // when
-        val exception = assertThrows<Exception> { businessProfileService.createBusinessProfile(invalidRequest) }
 
         // then
-        assertEquals(InvalidBusinessProfileException::class, exception::class)
+        assertThrows<InvalidBusinessProfileException> { businessProfileService.createBusinessProfile(invalidRequest) }
 
         verify(exactly = 0) { businessProfileAccess.findByUserId(USER_1) }
         verify(exactly = 0) { businessProfileChangeRequestAccess.createChangeRequest(any()) }
@@ -112,12 +107,10 @@ class BusinessProfileServiceTest {
         //given
         every { businessProfileAccess.findByUserId(USER_1) } returns BUSINESS_PROFILE_1
 
-        // when
-        val exception = assertThrows<Exception> { businessProfileService.createBusinessProfile(BUSINESS_PROFILE_1) }
-
         // then
-        assertEquals(BusinessProfileAlreadyExistsException::class, exception::class)
-
+        assertThrows<BusinessProfileAlreadyExistsException> {
+            businessProfileService.createBusinessProfile(BUSINESS_PROFILE_1)
+        }
         verify(exactly = 1) { businessProfileAccess.findByUserId(USER_1) }
         verify(exactly = 0) { businessProfileChangeRequestAccess.createChangeRequest(any()) }
         verify(exactly = 0) { kafkaPublisher.publish(any(), any(), any()) }
@@ -166,11 +159,9 @@ class BusinessProfileServiceTest {
             companyName = "",
             pan = "1234567890"
         )
-        // when
-        val exception = assertThrows<Exception> { businessProfileService.updateBusinessProfile(invalidRequest) }
 
         // then
-        assertEquals(InvalidBusinessProfileException::class, exception::class)
+        assertThrows<InvalidBusinessProfileException> { businessProfileService.updateBusinessProfile(invalidRequest) }
 
         verify(exactly = 0) { businessProfileAccess.findByUserId(USER_1) }
         verify(exactly = 0) { businessProfileChangeRequestAccess.createChangeRequest(any()) }
@@ -182,11 +173,10 @@ class BusinessProfileServiceTest {
         //given
         every { businessProfileAccess.findByUserId(USER_1) } returns null
 
-        // when
-        val exception = assertThrows<Exception> { businessProfileService.updateBusinessProfile(BUSINESS_PROFILE_1) }
-
         // then
-        assertEquals(BusinessProfileNotFoundException::class, exception::class)
+        assertThrows<BusinessProfileNotFoundException> {
+            businessProfileService.updateBusinessProfile(BUSINESS_PROFILE_1)
+        }
 
         verify(exactly = 1) { businessProfileAccess.findByUserId(USER_1) }
         verify(exactly = 0) { businessProfileChangeRequestAccess.createChangeRequest(any()) }

@@ -13,7 +13,7 @@ allprojects {
     apply(plugin = "java")
 
     group = "demo.craft"
-    version = "0.0.4-SNAPSHOT"
+    version = "0.0.5-SNAPSHOT"
     java.sourceCompatibility = JavaVersion.VERSION_11
 
     tasks.withType<KotlinCompile> {

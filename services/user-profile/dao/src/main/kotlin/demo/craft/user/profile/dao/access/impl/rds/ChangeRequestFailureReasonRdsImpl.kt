@@ -1,7 +1,9 @@
 package demo.craft.user.profile.dao.access.impl.rds
 
+import com.fasterxml.jackson.core.type.TypeReference
 import demo.craft.common.domain.enums.Product
 import demo.craft.user.profile.dao.access.ChangeRequestFailureReasonAccess
+import demo.craft.user.profile.dao.access.cache.GenericCacheManager
 import demo.craft.user.profile.dao.repository.ChangeRequestFailureReasonRepository
 import demo.craft.user.profile.domain.entity.ChangeRequestFailureReason
 import demo.craft.user.profile.domain.enums.FieldName
@@ -10,11 +12,17 @@ import org.springframework.stereotype.Component
 
 @Component
 internal class ChangeRequestFailureReasonRdsImpl(
-    private val changeRequestFailureReasonRepository: ChangeRequestFailureReasonRepository
+    private val changeRequestFailureReasonRepository: ChangeRequestFailureReasonRepository,
+    private val genericCacheManager: GenericCacheManager,
 ) : ChangeRequestFailureReasonAccess {
     private val log = KotlinLogging.logger {}
     override fun findAllByRequestId(requestId: String): List<ChangeRequestFailureReason> =
-        changeRequestFailureReasonRepository.findByRequestId(requestId)
+        genericCacheManager.cacheLookup(
+            getCacheKey(requestId),
+            object : TypeReference<List<ChangeRequestFailureReason>>() {}
+        ) {
+            changeRequestFailureReasonRepository.findByRequestId(requestId)
+        }
 
     override fun saveAllFailureReason(
         requestId: String,
@@ -36,6 +44,13 @@ internal class ChangeRequestFailureReasonRdsImpl(
             }
         ).also {
             log.info { "Failure reasons are saved for requestId: $requestId and product: $product. Count: ${it.size}" }
+            genericCacheManager.cacheUpdate(
+                getCacheKey(requestId),
+                object : TypeReference<List<ChangeRequestFailureReason>>() {},
+                it
+            )
         }
     }
+
+    private fun getCacheKey(requestId: String) = "ChangeRequestFailureReason_$requestId"
 }

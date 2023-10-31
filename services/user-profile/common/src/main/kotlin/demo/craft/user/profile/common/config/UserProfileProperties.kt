@@ -8,6 +8,7 @@ class UserProfileProperties {
     val kafka = KafkaProperties()
     val integration = IntegrationProperties()
     val lock = LockProperties()
+    val cache = CacheProperties()
 
     class KafkaProperties {
         var businessProfileChangeRequestTopic: String = "business-profile-change-request"
@@ -25,5 +26,9 @@ class UserProfileProperties {
 
     class LockProperties {
         var timeout: Duration = Duration.ofSeconds(2)
+    }
+
+    class CacheProperties {
+        var defaultCacheTtl: Duration = Duration.ofDays(7)
     }
 }

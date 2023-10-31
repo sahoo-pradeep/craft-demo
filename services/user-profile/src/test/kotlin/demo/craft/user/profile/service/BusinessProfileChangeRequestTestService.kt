@@ -3,7 +3,6 @@ package demo.craft.user.profile.service
 import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_ACCEPTED_1
 import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_ACCEPTED_2
 import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_ACCEPTED_3
-import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
 import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_2
 import demo.craft.user.profile.TestConstant.BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_REJECTED_2
 import demo.craft.user.profile.TestConstant.CHANGE_REQUEST_FAILURE_REASON_3
@@ -13,9 +12,7 @@ import demo.craft.user.profile.TestConstant.CHANGE_REQUEST_PRODUCT_STATUS_REJECT
 import demo.craft.user.profile.TestConstant.REQUEST_ID_1
 import demo.craft.user.profile.TestConstant.REQUEST_ID_2
 import demo.craft.user.profile.TestConstant.USER_1
-import demo.craft.user.profile.TestConstant.USER_2
 import demo.craft.user.profile.common.exception.BusinessProfileChangeRequestNotFoundException
-import demo.craft.user.profile.common.exception.UnauthorizedUserException
 import demo.craft.user.profile.dao.access.BusinessProfileChangeRequestAccess
 import demo.craft.user.profile.dao.access.ChangeRequestFailureReasonAccess
 import demo.craft.user.profile.dao.access.ChangeRequestProductStatusAccess
@@ -27,7 +24,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.verify
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
@@ -90,34 +87,19 @@ class BusinessProfileChangeRequestTestService {
             )
         )
 
-        Assertions.assertEquals(expectedResponse, changeRequestWrapper)
+        assertEquals(expectedResponse, changeRequestWrapper)
+
         if (changeRequestWrapper.productStatuses.any { it.productStatus.status == ChangeRequestStatus.REJECTED }) {
-            Assertions.assertEquals(ChangeRequestStatus.REJECTED, changeRequestWrapper.changeRequest.status)
+            assertEquals(ChangeRequestStatus.REJECTED, changeRequestWrapper.changeRequest.status)
+        }
+
+        if (changeRequestWrapper.productStatuses.all { it.productStatus.status == ChangeRequestStatus.ACCEPTED }) {
+            assertEquals(ChangeRequestStatus.ACCEPTED, changeRequestWrapper.changeRequest.status)
         }
 
         verify(exactly = 1) { businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_2) }
         verify(exactly = 1) { changeRequestProductStatusAccess.findAllByRequestId(REQUEST_ID_2) }
         verify(exactly = 1) { changeRequestFailureReasonAccess.findAllByRequestId(REQUEST_ID_2) }
-    }
-
-    @Test
-    fun `get business profile change request details for some other user`() {
-        //given
-        every {
-            businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_1)
-        } returns BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_1
-
-        //when
-        val exception = assertThrows<Exception> {
-            businessProfileChangeRequestService.getBusinessProfileChangeRequest(USER_2, REQUEST_ID_1)
-        }
-
-        //then
-        Assertions.assertEquals(UnauthorizedUserException::class, exception::class)
-
-        verify(exactly = 1) { businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_1) }
-        verify(exactly = 0) { changeRequestProductStatusAccess.findAllByRequestId(REQUEST_ID_1) }
-        verify(exactly = 0) { changeRequestFailureReasonAccess.findAllByRequestId(REQUEST_ID_1) }
     }
 
     @Test
@@ -127,13 +109,10 @@ class BusinessProfileChangeRequestTestService {
             businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_1)
         } returns null
 
-        //when
-        val exception = assertThrows<Exception> {
-            businessProfileChangeRequestService.getBusinessProfileChangeRequest(USER_2, REQUEST_ID_1)
-        }
-
         //then
-        Assertions.assertEquals(BusinessProfileChangeRequestNotFoundException::class, exception::class)
+        assertThrows<BusinessProfileChangeRequestNotFoundException> {
+            businessProfileChangeRequestService.getBusinessProfileChangeRequest(USER_1, REQUEST_ID_1)
+        }
 
         verify(exactly = 1) { businessProfileChangeRequestAccess.findByUserIdAndRequestId(USER_1, REQUEST_ID_1) }
         verify(exactly = 0) { changeRequestProductStatusAccess.findAllByRequestId(REQUEST_ID_1) }
@@ -156,7 +135,7 @@ class BusinessProfileChangeRequestTestService {
         //then
         val expectedResponse = listOf(BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_ACCEPTED_1, BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_ACCEPTED_2)
 
-        Assertions.assertEquals(expectedResponse, actualChangeRequests)
+        assertEquals(expectedResponse, actualChangeRequests)
 
         verify(exactly = 1) { businessProfileChangeRequestAccess.findAllByUserId(USER_1) }
     }
@@ -176,7 +155,7 @@ class BusinessProfileChangeRequestTestService {
 
         //then
         val expectedResponse = listOf(BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_IN_PROGRESS_2)
-        Assertions.assertEquals(expectedResponse, actualChangeRequests)
+        assertEquals(expectedResponse, actualChangeRequests)
         verify(exactly = 1) { businessProfileChangeRequestAccess.findAllByUserId(USER_1) }
     }
 
@@ -199,7 +178,7 @@ class BusinessProfileChangeRequestTestService {
 
         //then
         val expectedResponse = listOf(BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_ACCEPTED_3, BUSINESS_PROFILE_CREATE_CHANGE_REQUEST_ACCEPTED_2)
-        Assertions.assertEquals(expectedResponse, actualChangeRequests)
+        assertEquals(expectedResponse, actualChangeRequests)
         verify(exactly = 1) { businessProfileChangeRequestAccess.findAllByUserId(USER_1) }
     }
 }

@@ -1,5 +1,6 @@
 rootProject.name = "craft-demo"
 include("common:communication")
+include("common:cache")
 include("common:domain")
 include("common:lock")
 include("services:product-subscription")

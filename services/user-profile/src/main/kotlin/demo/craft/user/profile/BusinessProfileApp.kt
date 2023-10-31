@@ -1,5 +1,6 @@
 package demo.craft.user.profile
 
+import demo.craft.common.cache.config.CacheProperties
 import demo.craft.common.communication.config.CommunicationProperties
 import demo.craft.common.lock.config.LockManagerProperties
 import demo.craft.user.profile.common.config.UserProfileProperties
@@ -14,7 +15,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     scanBasePackages = [
         "demo.craft.user.profile",
         "demo.craft.common.communication", // for kafka publisher
-        "demo.craft.common.lock" // for lock manager
+        "demo.craft.common.lock", // for lock manager
+        "demo.craft.common.cache" // for redis cache
     ]
 )
 @ConfigurationPropertiesScan(
@@ -22,6 +24,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
         UserProfileProperties::class,
         CommunicationProperties::class,
         LockManagerProperties::class,
+        CacheProperties::class,
     ]
 )
 @EnableJpaRepositories
