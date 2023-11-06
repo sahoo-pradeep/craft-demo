@@ -1,11 +1,9 @@
 package demo.craft.user.profile.dao.access.impl.rds
 
-import com.fasterxml.jackson.core.type.TypeReference
 import demo.craft.user.profile.common.exception.BusinessProfileChangeRequestIllegalStateException
 import demo.craft.user.profile.common.exception.BusinessProfileChangeRequestNotFoundException
 import demo.craft.user.profile.common.exception.BusinessProfileUpdateAlreadyInProgressException
 import demo.craft.user.profile.dao.access.BusinessProfileChangeRequestAccess
-import demo.craft.user.profile.dao.access.cache.GenericCacheManager
 import demo.craft.user.profile.dao.repository.AddressRepository
 import demo.craft.user.profile.dao.repository.BusinessProfileChangeRequestRepository
 import demo.craft.user.profile.domain.entity.BusinessProfileChangeRequest
@@ -18,20 +16,14 @@ import org.springframework.stereotype.Component
 internal class BusinessProfileChangeRequestRdsImpl(
     private val businessProfileChangeRequestRepository: BusinessProfileChangeRequestRepository,
     private val addressRepository: AddressRepository,
-    private val genericCacheManager: GenericCacheManager
 ) : BusinessProfileChangeRequestAccess {
     private val log = KotlinLogging.logger {}
 
     override fun findAllByUserId(userId: String): List<BusinessProfileChangeRequest> =
-        genericCacheManager.cacheLookup(
-            getCacheKey(userId),
-            object : TypeReference<List<BusinessProfileChangeRequest>>() {}
-        ) {
-            businessProfileChangeRequestRepository.findAllByUserIdOrderByIdAsc(userId)
-        }
+        businessProfileChangeRequestRepository.findAllByUserIdOrderByIdAsc(userId)
 
     override fun findByUserIdAndRequestId(userId: String, requestId: String): BusinessProfileChangeRequest? =
-        findAllByUserId(userId).find { it.requestId == requestId }
+        businessProfileChangeRequestRepository.findByUserIdAndRequestId(userId, requestId)
 
     @Transactional
     override fun createChangeRequest(
@@ -59,16 +51,9 @@ internal class BusinessProfileChangeRequestRdsImpl(
             throw BusinessProfileChangeRequestIllegalStateException(userId, requestId, changeRequest.status.name, updatedStatus.name)
         }
 
-        return businessProfileChangeRequestRepository.saveAndFlush(changeRequest.copy(status = updatedStatus)).also {
-            log.info { "Status of change request with requestId $requestId is updated from ${changeRequest.status} to ${it.status}" }
-            val allChangeRequests = businessProfileChangeRequestRepository.findAllByUserIdOrderByIdAsc(userId)
-            genericCacheManager.cacheUpdate(
-                getCacheKey(userId),
-                object : TypeReference<List<BusinessProfileChangeRequest>>() {},
-                allChangeRequests
-            )
+        val updatedChangeRequest = changeRequest.copy(status = updatedStatus)
+        return businessProfileChangeRequestRepository.saveAndFlush(updatedChangeRequest).also {
+            log.info { "Status of change request with requestId $requestId is updated to ${it.status}" }
         }
     }
-
-    private fun getCacheKey(userId: String) = "BusinessProfileChangeRequest_$userId"
 }

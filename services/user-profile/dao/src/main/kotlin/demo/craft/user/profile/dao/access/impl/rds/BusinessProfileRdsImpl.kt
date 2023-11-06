@@ -19,6 +19,9 @@ internal class BusinessProfileRdsImpl(
     private val genericCacheManager: GenericCacheManager
 ) : BusinessProfileAccess {
     private val log = KotlinLogging.logger {}
+    companion object {
+        const val CACHE_PREFIX: String = "BUSINESS_PROFILE"
+    }
 
     override fun findByUserId(userId: String): BusinessProfile? =
         genericCacheManager.cacheLookupForNullable(
@@ -91,10 +94,10 @@ internal class BusinessProfileRdsImpl(
         inputAddress.copy(id = null)
 
     // id is null when the address is not saved already
-    private fun saveNewAddress(businessAddress: Address): Address =
-        businessAddress.id?.let {
-            addressRepository.saveAndFlush(businessAddress)
-        } ?: businessAddress
+    private fun saveNewAddress(address: Address): Address =
+        address.id?.let {
+            address
+        } ?: addressRepository.saveAndFlush(address)
 
-    private fun getCacheKey(userId: String) = "BusinessProfile_$userId"
+    private fun getCacheKey(userId: String) = "${CACHE_PREFIX}_$userId"
 }

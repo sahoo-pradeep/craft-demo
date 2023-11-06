@@ -95,7 +95,7 @@ data class Address(
             }
         }
 
-    fun validateZip(zip: String): String? {
+    fun validateZip(zip: String): String? { // todo
         if (zip.length !in 5..6) {
             return "zip should be 5 or 6 character long"
         }
