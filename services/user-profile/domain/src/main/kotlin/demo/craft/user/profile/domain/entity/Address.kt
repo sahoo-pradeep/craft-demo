@@ -3,6 +3,7 @@ package demo.craft.user.profile.domain.entity
 import demo.craft.user.profile.domain.enums.AddressFieldName
 import demo.craft.user.profile.domain.enums.FieldName
 import demo.craft.user.profile.domain.model.AddressType
+import demo.craft.user.profile.domain.model.InvalidField
 import java.time.LocalDateTime
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -28,18 +29,18 @@ data class Address(
     @UpdateTimestamp
     val updatedAt: LocalDateTime? = null,
 ) {
-    fun validateFields(addressType: AddressType): List<Pair<FieldName, String>> {
-        val invalidFields = mutableListOf<Pair<FieldName, String>>()
+    fun validateFields(addressType: AddressType): List<InvalidField> {
+        val invalidFields = mutableListOf<InvalidField>()
 
         if (line1.isEmpty()) {
             invalidFields.add(
-                Pair(getFieldName(addressType, AddressFieldName.LINE_1), "line1 should not be empty")
+                InvalidField(getFieldName(addressType, AddressFieldName.LINE_1), "line1 should not be empty")
             )
         }
 
         if (city.isEmpty()) {
             invalidFields.add(
-                Pair(
+                InvalidField(
                     getFieldName(addressType, AddressFieldName.CITY), "city should not be empty"
                 )
             )
@@ -47,7 +48,7 @@ data class Address(
 
         if (state.isEmpty()) {
             invalidFields.add(
-                Pair(
+                InvalidField(
                     getFieldName(addressType, AddressFieldName.STATE), "state should not be empty"
                 )
             )
@@ -55,7 +56,7 @@ data class Address(
 
         if (zip.isEmpty()) {
             invalidFields.add(
-                Pair(
+                InvalidField(
                     getFieldName(addressType, AddressFieldName.ZIP), "zip should not be empty"
                 )
             )
@@ -69,7 +70,7 @@ data class Address(
 
         if (country.isEmpty()) {
             invalidFields.add(
-                Pair(
+                InvalidField(
                     getFieldName(addressType, AddressFieldName.COUNTRY), "country should not be empty"
                 )
             )
@@ -101,12 +102,12 @@ data class Address(
             }
         }
 
-    fun validateZip(zip: String, addressType: AddressType): List<Pair<FieldName, String>> {
-        val invalidFields = mutableListOf<Pair<FieldName, String>>()
+    private fun validateZip(zip: String, addressType: AddressType): List<InvalidField> {
+        val invalidFields = mutableListOf<InvalidField>()
 
         if (zip.length !in 5..6) {
             invalidFields.add(
-                Pair(
+                InvalidField(
                     getFieldName(addressType, AddressFieldName.ZIP), "zip should be 5 or 6 character long"
                 )
             )
@@ -114,7 +115,7 @@ data class Address(
 
         if (zip.any { !it.isDigit() }) {
             invalidFields.add(
-                Pair(
+                InvalidField(
                     getFieldName(addressType, AddressFieldName.ZIP), "zip should be digits"
                 )
             )

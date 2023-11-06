@@ -74,12 +74,14 @@ class RestResponseEntityExceptionHandler(
 
     data class ErrorBody(
         val reason: String,
-        val message: String
+        val message: String,
+        val additionalInfo: String? = null
     )
 
     private fun UserProfileException.toErrorBody() =
         ErrorBody(
             reason = this.reason,
-            message = this.message
+            message = this.message,
+            additionalInfo = this.additionalInfo
         )
 }

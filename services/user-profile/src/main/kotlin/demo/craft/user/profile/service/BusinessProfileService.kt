@@ -42,7 +42,7 @@ class BusinessProfileService(
     fun createBusinessProfile(businessProfile: BusinessProfile): BusinessProfileChangeRequest {
         val invalidFields = businessProfile.validateFields()
         if (invalidFields.isNotEmpty()) {
-            throw InvalidBusinessProfileException(businessProfile.userId, invalidFields.toKeyValueString())
+            throw InvalidBusinessProfileException(businessProfile.userId, objectMapper.writeValueAsString(invalidFields))
         }
 
         businessProfileAccess.findByUserId(businessProfile.userId)?.let {
@@ -55,7 +55,7 @@ class BusinessProfileService(
     fun updateBusinessProfile(businessProfile: BusinessProfile): BusinessProfileChangeRequest {
         val invalidFields = businessProfile.validateFields()
         if (invalidFields.isNotEmpty()) {
-            throw InvalidBusinessProfileException(businessProfile.userId, invalidFields.toKeyValueString())
+            throw InvalidBusinessProfileException(businessProfile.userId, objectMapper.writeValueAsString(invalidFields))
         }
 
         // ensures that business profile is already created

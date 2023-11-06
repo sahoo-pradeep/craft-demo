@@ -2,6 +2,7 @@ package demo.craft.user.profile.domain.entity
 
 import demo.craft.user.profile.domain.enums.FieldName
 import demo.craft.user.profile.domain.model.AddressType
+import demo.craft.user.profile.domain.model.InvalidField
 import java.time.LocalDateTime
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -31,33 +32,33 @@ data class BusinessProfile(
     @UpdateTimestamp
     val updatedAt: LocalDateTime? = null,
 ) {
-    fun validateFields(): List<Pair<FieldName, String>> {
-        val invalidFields = mutableListOf<Pair<FieldName, String>>()
+    fun validateFields(): List<InvalidField> {
+        val invalidFields = mutableListOf<InvalidField>()
 
         when {
             companyName.isEmpty() -> invalidFields.add(
-                Pair(
+                InvalidField(
                     FieldName.COMPANY_NAME,
                     "company name should not be empty"
                 )
             )
 
             legalName.isEmpty() -> invalidFields.add(
-                Pair(
+                InvalidField(
                     FieldName.COMPANY_NAME,
                     "company name should not be empty"
                 )
             )
 
-            pan.isEmpty() -> invalidFields.add(Pair(FieldName.PAN, "pan should not be empty"))
+            pan.isEmpty() -> invalidFields.add(InvalidField(FieldName.PAN, "pan should not be empty"))
 
-            !isPanValid(pan) -> invalidFields.add(Pair(FieldName.PAN, "invalid pan"))
+            !isPanValid(pan) -> invalidFields.add(InvalidField(FieldName.PAN, "invalid pan"))
 
-            ein.isEmpty() -> invalidFields.add(Pair(FieldName.EIN, "ein should not be empty"))
+            ein.isEmpty() -> invalidFields.add(InvalidField(FieldName.EIN, "ein should not be empty"))
 
-            !isEinValid(ein) -> invalidFields.add(Pair(FieldName.EIN, "invalid ein"))
+            !isEinValid(ein) -> invalidFields.add(InvalidField(FieldName.EIN, "invalid ein"))
 
-            email.isEmpty() -> invalidFields.add(Pair(FieldName.EMAIL, "email should not be empty"))
+            email.isEmpty() -> invalidFields.add(InvalidField(FieldName.EMAIL, "email should not be empty"))
         }
 
         invalidFields.addAll(businessAddress.validateFields(AddressType.BUSINESS))

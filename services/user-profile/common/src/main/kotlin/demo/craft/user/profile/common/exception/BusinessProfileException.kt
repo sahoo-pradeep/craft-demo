@@ -12,8 +12,9 @@ class BusinessProfileAlreadyExistsException(userId: String) :
         message = "Business profile already exist for userId $userId",
     )
 
-class InvalidBusinessProfileException(userId: String, invalidFields: String) :
+class InvalidBusinessProfileException(userId: String, additionalInfo: String) :
     UserProfileException(
         reason = "invalidParameter",
-        message = "Invalid business profile for userId $userId. Invalid Fields: $invalidFields",
+        message = "Invalid business profile for userId $userId",
+        additionalInfo = additionalInfo
     )

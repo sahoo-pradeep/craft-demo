@@ -60,7 +60,7 @@ fun demo.craft.user.profile.model.Address.toDomainModel(userId: String): Address
     )
 
 fun List<Pair<FieldName, String>>.toKeyValueString() =
-    this.joinToString(",", "[", "]") { "{field = ${it.first}, reason = '${it.second}'}" }
+    this.joinToString(",", "[", "]") { "${it.first}:${it.second}" }
 
 fun BusinessProfileChangeRequest.toApiModel(): demo.craft.user.profile.model.BusinessProfileChangeRequestStatus =
     demo.craft.user.profile.model.BusinessProfileChangeRequestStatus(
