@@ -6,12 +6,6 @@ class BusinessProfileUpdateAlreadyInProgressException(userId: String) :
         message = "Business profile update is already in progress for userId $userId. A new request is not allowed."
     )
 
-class InvalidBusinessProfileChangeRequestException(userId: String, invalidFields: String? = null) :
-    UserProfileException(
-        reason = "invalidParameter",
-        message = "Change request for business profile is invalid for userId $userId. Invalid Fields: $invalidFields"
-    )
-
 class BusinessProfileChangeRequestNotFoundException(userId: String, requestId: String?) :
     UserProfileException(
         reason = "notFound",
@@ -24,6 +18,6 @@ class BusinessProfileChangeRequestIllegalStateException(
     currentStatus: String,
     updateStatus: String
 ) : UserProfileException(
-    reason = "invalidParameter",
+    reason = "internalError",
     message = "Illegal status update of change request from $currentStatus to $updateStatus. userId: $userId, requestId: $requestId"
 )

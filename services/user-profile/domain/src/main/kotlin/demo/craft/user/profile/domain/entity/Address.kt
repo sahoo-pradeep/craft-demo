@@ -61,6 +61,12 @@ data class Address(
             )
         }
 
+        validateZip(zip, addressType).let {
+            if (it.isNotEmpty()) {
+                invalidFields.addAll(it)
+            }
+        }
+
         if (country.isEmpty()) {
             invalidFields.add(
                 Pair(
@@ -95,16 +101,26 @@ data class Address(
             }
         }
 
-    fun validateZip(zip: String): String? { // todo
+    fun validateZip(zip: String, addressType: AddressType): List<Pair<FieldName, String>> {
+        val invalidFields = mutableListOf<Pair<FieldName, String>>()
+
         if (zip.length !in 5..6) {
-            return "zip should be 5 or 6 character long"
+            invalidFields.add(
+                Pair(
+                    getFieldName(addressType, AddressFieldName.ZIP), "zip should be 5 or 6 character long"
+                )
+            )
         }
 
         if (zip.any { !it.isDigit() }) {
-            return "zip should be digits"
+            invalidFields.add(
+                Pair(
+                    getFieldName(addressType, AddressFieldName.ZIP), "zip should be digits"
+                )
+            )
         }
 
-        return null
+        return invalidFields
     }
 
     override fun equals(other: Any?): Boolean {

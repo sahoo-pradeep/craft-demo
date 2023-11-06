@@ -23,6 +23,6 @@ class ProductStatusIllegalStateException(
     currentStatus: String,
     updateStatus: String
 ) : UserProfileException(
-    reason = "invalidParameter",
+    reason = "internalError",
     message = "Illegal status update of product status from $currentStatus to $updateStatus. requestId: $requestId"
 )

@@ -2,9 +2,14 @@ package demo.craft.user.profile.exception
 
 import demo.craft.user.profile.common.config.LoggingContext
 import demo.craft.user.profile.common.exception.BusinessProfileAlreadyExistsException
+import demo.craft.user.profile.common.exception.BusinessProfileChangeRequestIllegalStateException
+import demo.craft.user.profile.common.exception.BusinessProfileChangeRequestNotFoundException
 import demo.craft.user.profile.common.exception.BusinessProfileNotFoundException
 import demo.craft.user.profile.common.exception.BusinessProfileUpdateAlreadyInProgressException
 import demo.craft.user.profile.common.exception.InvalidBusinessProfileException
+import demo.craft.user.profile.common.exception.InvalidProductStatusException
+import demo.craft.user.profile.common.exception.ProductStatusAlreadyExistsException
+import demo.craft.user.profile.common.exception.ProductStatusNotFoundException
 import demo.craft.user.profile.common.exception.UnauthorizedUserException
 import demo.craft.user.profile.common.exception.UserProfileException
 import kotlin.reflect.KClass
@@ -31,7 +36,11 @@ class RestResponseEntityExceptionHandler(
         BusinessProfileAlreadyExistsException::class to HttpStatus.CONFLICT,
         InvalidBusinessProfileException::class to HttpStatus.CONFLICT,
         BusinessProfileUpdateAlreadyInProgressException::class to HttpStatus.CONFLICT,
-        UnauthorizedUserException::class to HttpStatus.UNAUTHORIZED
+        BusinessProfileChangeRequestNotFoundException::class to HttpStatus.NOT_FOUND,
+        InvalidProductStatusException::class to HttpStatus.CONFLICT,
+        ProductStatusAlreadyExistsException::class to HttpStatus.CONFLICT,
+        ProductStatusNotFoundException::class to HttpStatus.NOT_FOUND,
+        UnauthorizedUserException::class to HttpStatus.UNAUTHORIZED,
     )
 
     @ExceptionHandler
