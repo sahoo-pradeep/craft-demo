@@ -1,0 +1,332 @@
+{
+	"info": {
+		"_postman_id": "365546e2-07ce-401f-a102-a3469782d164",
+		"name": "craft-demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14055420"
+	},
+	"item": [
+		{
+			"name": "user-profile",
+			"item": [
+				{
+					"name": "get business profile",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-user-id",
+								"value": "{{userId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/user-profile/v1/business-profile",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user-profile",
+								"v1",
+								"business-profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create business profile",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-user-id",
+								"value": "{{userId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"businessProfile\": {\n        \"companyName\": \"Craft Demo\",\n        \"legalName\": \"Craft Demo Pvt Ltd\",\n        \"businessAddress\": {\n            \"line1\": \"Craft Demo IN\",\n            \"line2\": \"Street A\",\n            \"city\": \"Mountain View\",\n            \"state\": \"California\",\n            \"zip\": \"560100\",\n            \"country\": \"United States\"\n        },\n        \"legalAddress\": {\n            \"line1\": \"Craft Demo IN\",\n            \"line2\": \"Street B\",\n            \"city\": \"Bengaluru\",\n            \"state\": \"KA\",\n            \"zip\": \"560100\",\n            \"country\": \"India\"\n        },\n        \"pan\": \"ABCCA1234C\",\n        \"ein\": \"12-3456789\",\n        \"email\": \"craft@demo.com\",\n        \"website\": \"craft.demo.com\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/user-profile/v1/business-profile",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user-profile",
+								"v1",
+								"business-profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update business profile",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-user-id",
+								"value": "{{userId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"businessProfile\": {\n        \"companyName\": \"Craft Demo\",\n        \"legalName\": \"Craft Demo Pvt Ltd\",\n        \"businessAddress\": {\n            \"line1\": \"New Craft Demo\",\n            \"line2\": \"Street A\",\n            \"city\": \"Mountain View\",\n            \"state\": \"Bengaluru\",\n            \"zip\": \"560100\",\n            \"country\": \"Bengaluru\"\n        },\n        \"legalAddress\": {\n            \"line1\": \"Craft Demo IN\",\n            \"line2\": \"Street B\",\n            \"city\": \"Bengaluru\",\n            \"state\": \"KA\",\n            \"zip\": \"560100\",\n            \"country\": \"India\"\n        },\n        \"pan\": \"ABCCA1234C\",\n        \"ein\": \"12-3456789\",\n        \"email\": \"craft@demo.com\",\n        \"website\": \"craft.demo.com\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/user-profile/v1/business-profile",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user-profile",
+								"v1",
+								"business-profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all change requests with filter",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"var changeRequestStatuses = jsonData.changeRequestStatuses",
+									"if(changeRequestStatuses.length > 0) {",
+									"    postman.setGlobalVariable(\"requestId\", changeRequestStatuses[0].requestId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-user-id",
+								"value": "{{userId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/user-profile/v1/business-profile/change-request/filter?page=0&size=10&sort=DESC",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user-profile",
+								"v1",
+								"business-profile",
+								"change-request",
+								"filter"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "ACCEPTED",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "sort",
+									"value": "DESC"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get change request details",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-user-id",
+								"value": "{{userId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/user-profile/v1/business-profile/change-request/details?requestId={{requestId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"user-profile",
+								"v1",
+								"business-profile",
+								"change-request",
+								"details"
+							],
+							"query": [
+								{
+									"key": "requestId",
+									"value": "{{requestId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "product-subscription",
+			"item": [
+				{
+					"name": "get product subscription",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-user-id",
+								"value": "{{userId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8081/product-subscription/v1/product-subscription",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"product-subscription",
+								"v1",
+								"product-subscription"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "save product subscription",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-user-id",
+								"value": "{{userId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"productSubscription\": {\n        \"product\": \"QUICKBOOKS_ACCOUNTING\",\n        \"status\": \"ACTIVE\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8081/product-subscription/v1/product-subscription",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"product-subscription",
+								"v1",
+								"product-subscription"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update product subscription",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-user-id",
+								"value": "{{userId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"productSubscription\": {\n        \"product\": \"QUICKBOOKS_ACCOUNTING\",\n        \"status\": \"ACTIVE\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8081/product-subscription/v1/product-subscription",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"product-subscription",
+								"v1",
+								"product-subscription"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
