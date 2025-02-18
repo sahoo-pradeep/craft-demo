@@ -3,7 +3,7 @@
 Project: Building a User Profile service which can serve the creation and updation of common Business Profile of a user across multiple products. This service can be extended to include other common user profiles as well.
 
 ## Terminologies
-1. **Business Profile**: A business profile is composed of company name and address, legal name and address, pan, ein, email, website etc
+1. **Business Profile**: A business profile is composed of company name and address, legal name and address, pan, ein, email, website etc.
 
 ## Modules
 This is a mono repo and modular project, which means all the services are part of the same repository for the purpose of demonstration. But, different modules are created basis separation of concern and reusability. In real projects, separate repository can be created.
